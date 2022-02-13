@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "collaborative-obsidian-backend"
+version = "0.1.0"
+description = ""
+authors = ["ddehueck <d.dehueck@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+fastapi = "^0.70.1"
+alembic = "^1.7.5"
+loguru = "^0.5.3"
+uvicorn = "^0.16.0"
+python-dotenv = "^0.19.2"
+passlib = "^1.7.4"
+psycopg2 = "^2.9.3"
+Jinja2 = "^3.0.3"
+python-multipart = "^0.0.5"
+ulid = "^1.1"
+boto3 = "^1.20.54"
+itsdangerous = "^2.0.1"
+result = "^0.7.0"
+price-parser = "^0.3.4"
+PyMuPDF = "^1.19.5"
+isort = "^5.10.1"
+
+[tool.poetry.dev-dependencies]
+black = "^22.1.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
