@@ -2,6 +2,7 @@
 
 {% from "components/invoices/card.html" import invoice_card %}
 {% from "components/invoices/single-view.html" import single_invoice_view %}
+{% from "components/invoices/upload-section.html" import invoice_upload_section %}
   
 {% block head %}
   <title>Invoice Feed</title>
@@ -10,10 +11,9 @@
 
 {% block content %}
 
-<main class="flex" x-data="{index: null}">
-    <h1>{{test_var}}</h1>
+<main class="flex" x-data="{index: new URLSearchParams(location.search).get('index')}">
     <!-- Invoice Feed Column -->
-    <div class="w-1/3 h-screen p-8 bg-gray-50 border-r-2 border-gray-200">
+    <div class="w-1/3 h-screen overflow-scroll p-8 bg-gray-50 border-r-2 border-gray-200">
         <h2 class="font-extrabold text-3xl mb-5">Upcoming Invoices</h2>
 
         {% for data in invoices %}
@@ -26,12 +26,12 @@
     
     <!-- Single Item View-->
     <div class="w-2/3 h-screen">
-        <div x-show="index == null">
-            <h1>Nothing To show.</h1>
+        <div x-show="index == null" x-transition:enter.duration.500ms>
+            {{ invoice_upload_section() }}
         </div>
-        <div x-show="index != null">
+        <div x-cloak x-show="index != null">
             {% for data in invoices %}
-            <div class="m-8" x-show="index == {{loop.index}}">
+            <div class="m-8" x-show="index == {{loop.index}}" x-cloak x-transition:enter.duration.500ms>
                 {{ single_invoice_view(data)}}
             </div>
             {% endfor %}

@@ -1,9 +1,10 @@
 import fitz
 from fastapi import APIRouter, Depends, File, Request, UploadFile
 from fastapi.exceptions import HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from result import Result
 from sqlalchemy import desc
+from starlette.status import HTTP_302_FOUND
 
 from app.auth.utils import requires_authentication
 from app.db.session import SessionLocal
@@ -28,9 +29,8 @@ async def get_home(
 ):
     with SessionLocal() as db:
         invoices = get_invoices_by_user(db, user_id, order_by=order_by, limit=limit, offset=offset, desc=desc)
-
     invoices = [i.__dict__ for i in invoices]
-    return template_response("./invoice-feed.html", {"request": request, "invoices": invoices})
+    return template_response("./invoices/feed.html", {"request": request, "invoices": invoices})
 
 
 @router.get("/upload-invoice", response_class=HTMLResponse)
@@ -58,4 +58,4 @@ async def post_upload_invoice(file: UploadFile = File(...), user_id: str = Depen
     formatted_invoice = CreateInvoice.from_raw_parse(user_id, raw_parse)
     with SessionLocal() as db:
         save_invoice(db, formatted_invoice)
-    return formatted_invoice
+    return RedirectResponse("/home?order_by=created_on&desc=True&index=1", status_code=HTTP_302_FOUND)
