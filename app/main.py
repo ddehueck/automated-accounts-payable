@@ -26,9 +26,10 @@ app.include_router(marketing_router)
 app.include_router(payments_router)
 app.include_router(users_router)
 
-router = APIRouter()
+global_router = APIRouter()
 
-
-@router.get("/health")
+@global_router.get("/health")
 def get_health():
     return True
+
+app.include_router(global_router)
