@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
@@ -25,3 +25,10 @@ app.include_router(invoices_router)
 app.include_router(marketing_router)
 app.include_router(payments_router)
 app.include_router(users_router)
+
+router = APIRouter()
+
+
+@router.get("/health")
+def get_health():
+    return True
