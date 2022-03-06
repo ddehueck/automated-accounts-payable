@@ -1,0 +1,74 @@
+{% extends "components/sidebar-base.html" %}
+
+{% block head %}
+<title>Your Account Settings</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<main class="flex-1">
+    <div class="max-w-4xl mx-auto my-5 p-10">
+        <header>
+            <h2 class="text-xl leading-6 font-bold text-gray-900">Account Settings</h2>
+            <p class="mt-1 max-w-2xl text-sm text-gray-500">Your account information and corresponding settings.</p>
+        </header>
+
+        <div class="mt-5 border-t border-gray-200">
+            <dl class="divide-y divide-gray-200">
+                <div class="py-4 sm:grid sm:py-5 sm:grid-cols-2 sm:gap-4">
+                    <dt class="text-sm font-medium text-gray-500">Email address</dt>
+                    <dd class="mt-1 flex text-sm text-gray-900 sm:mt-0">
+                        <span class="flex-grow">{{user.email}}</span>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        <div class="border-t border-gray-200">
+            <dl class="divide-y divide-gray-200">
+                <div class="py-4 sm:grid sm:py-5 sm:grid-cols-2 sm:gap-4">
+                    <dt class="text-sm font-medium text-gray-500">Password</dt>
+                    <dd class="mt-1 flex text-sm text-gray-900 sm:mt-0">
+                        <form action="/settings/reset-password" method="POST" >
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Get Reset Password Link
+                            </button>
+                        </form>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        {% if user.stripe_session_id %}
+        <div class="border-t border-gray-200">
+            <dl class="divide-y divide-gray-200">
+                <div class="py-4 sm:grid sm:py-5 sm:grid-cols-2 sm:gap-4">
+                    <dt class="text-sm font-medium text-gray-500">Payment Plan</dt>
+                    <dd class="mt-1 flex text-sm text-gray-900 sm:mt-0">
+                        <form action="/create-portal-session" method="POST" >
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Manage Payment Plan
+                            </button>
+                        </form>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+
+        {% else %}
+        <div class="border-t border-gray-200">
+            <dl class="divide-y divide-gray-200">
+                <div class="py-4 sm:grid sm:py-5 sm:grid-cols-2 sm:gap-4">
+                    <dt class="text-sm font-medium text-gray-500">Payment Plan (Free)</dt>
+                    <dd class="mt-1 flex text-sm text-gray-900 sm:mt-0">
+                        <a href="/select-plan" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-md font-medium rounded-md text-white bg-slate-600 hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Upgrade Plan
+                        </a>
+                    </dd>
+                </div>
+            </dl>
+        </div>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}

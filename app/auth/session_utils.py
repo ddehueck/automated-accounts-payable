@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 class UserSession(BaseModel):
-    user_id: int = None
+    user_id: str = None
 
 
 def set_session(req: Request, data: UserSession) -> None:

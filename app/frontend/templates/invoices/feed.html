@@ -1,41 +1,39 @@
-{% extends "components/simple-base.html" %}
-
+{% extends "components/sidebar-base.html" %}
 {% from "components/invoices/card.html" import invoice_card %}
 {% from "components/invoices/single-view.html" import single_invoice_view %}
 {% from "components/invoices/upload-section.html" import invoice_upload_section %}
-  
+{% from "components/invoices/query-menu.html" import query_menu %}
+
 {% block head %}
-  <title>Invoice Feed</title>
-  {{ super() }}
+<title>Invoice Feed</title>
+{{ super() }}
 {% endblock %}
 
 {% block content %}
-
-<main class="flex" x-data="{index: new URLSearchParams(location.search).get('index')}">
+<main class="flex w-full" x-data="{highlighted: window.location.href.split('#')[1]}">
     <!-- Invoice Feed Column -->
     <div class="w-1/3 h-screen overflow-scroll p-8 bg-gray-50 border-r-2 border-gray-200">
         <h2 class="font-extrabold text-3xl mb-5">Upcoming Invoices</h2>
+        {{ query_menu() }}
 
-        {% for data in invoices %}
-            <div class="mt-5" x-on:click="index = {{loop.index}}">
-                {{ invoice_card(data) }}
-            </div>
+        {% for id, data in invoices.items() %}
+        <a id="{{id}}"></a>
+        <div class="mt-5" x-on:click="window.location.hash='{{id}}'; highlighted='{{id}}'" :class="{'border-2 border-green-400 rounded-lg': highlighted == '{{id}}' }">
+            {{ invoice_card(data) }}
+        </div>
         {% endfor %}
-
     </div>
-    
+
     <!-- Single Item View-->
     <div class="w-2/3 h-screen">
-        <div x-show="index == null" x-transition:enter.duration.500ms>
-            {{ invoice_upload_section() }}
-        </div>
-        <div x-cloak x-show="index != null">
-            {% for data in invoices %}
-            <div class="m-8" x-show="index == {{loop.index}}" x-cloak x-transition:enter.duration.500ms>
+        <div x-show="highlighted == null" x-transition:enter.duration.500ms>{{ invoice_upload_section() }}</div>
+        <div x-cloak x-show="highlighted!= null">
+            {% for id, data in invoices.items() %}
+            <div class="m-8" x-show="highlighted == '{{id}}'" x-cloak x-transition:enter.duration.500ms>
                 {{ single_invoice_view(data)}}
             </div>
             {% endfor %}
         </div>
-    </div> 
+    </div>
 </main>
 {% endblock %}

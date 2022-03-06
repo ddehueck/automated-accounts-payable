@@ -1,0 +1,51 @@
+{% extends "components/sidebar-base.html" %}
+{% from "components/payments/pricing-card.html" import pricing_card %}
+  
+
+{% block head %}
+  <title>Become a Premium User!</title>
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+<main class="flex-1">
+  
+  <div class="my-5 mx-auto max-w-2xl overflow-hidden">
+    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+      <div>
+        <h1 class="font-bold text-2xl text-gray-700">Become a Premium User</h1>
+        <p class="mt-2 text-sm text-gray-600">Thank you for considering to upgrade!</p>
+      </div>
+
+      {% set payment_plans = [
+        {
+          'name': 'Free Plan', 
+          'price': 'Free',
+          'plan_key': 'free',
+          'description': 'All the basics for accounts payable automation. No credit card required.', 
+          'included_features': [
+            'Add 10 Invoices Every Month'
+          ]
+        },
+        {
+          'name': 'Premium Plan', 
+          'price': '$49',
+          'plan_key': 'premium',
+          'description': "Everything needed to manage your organization's invoices.", 
+          'included_features': [
+            'Unlimited Invoices',
+          ]
+        }
+      ] 
+      %}
+      <div class="grid grid-cols-2 gap-10">
+        {% for plan in payment_plans %}
+          {{ pricing_card(plan) }}
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+
+</main>
+{% endblock %}

@@ -6,9 +6,13 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from starlette.status import HTTP_302_FOUND
 
 import app.db.models as db_models
+from app.config import config as global_config
 from app.db.session import SessionLocal
+from app.emails.utils import send_reset_pswd_email
 from app.frontend.templates import template_response
+from app.users.db_utils import get_user_by_id
 
+from .db_utils import create_reset_pwd_token
 from .session_utils import UserSession, clear_session, set_session
 from .utils import hash_pswd, requires_authentication, verify_pswd
 
@@ -53,8 +57,22 @@ async def post_login(request: Request, email: str = Form(...), password: str = F
         if not verify_pswd(password, existing_user.password_hash):
             return RedirectResponse("/login?error=true", status_code=HTTP_302_FOUND)
 
-    set_session(request, UserSession(user_id=existing_user.id, projects=projects))
+    set_session(request, UserSession(user_id=existing_user.id))
     return RedirectResponse("/", status_code=HTTP_302_FOUND)
+
+
+@router.post("/settings/reset-password", response_class=RedirectResponse)
+def settings_reset_password(user_id: str = Depends(requires_authentication)):
+    with SessionLocal() as db:
+        user = get_user_by_id(db, user_id)
+        token: db_models.ResetPasswordToken = create_reset_pwd_token(db, user_id)
+
+        reset_pswd_link = f"{global_config.base_domain}/reset-password?token={token.token}"
+        send_reset_pswd_email(user.email, reset_pswd_link)
+
+    return RedirectResponse(
+        "/settings/account?message=Email has been sent with reset password link.", status_code=HTTP_302_FOUND
+    )
 
 
 @router.get("/reset-password", response_class=HTMLResponse)

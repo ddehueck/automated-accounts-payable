@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import sqlalchemy as sa
 from sqlalchemy import asc, desc
@@ -7,6 +7,10 @@ from sqlalchemy.orm import Session
 from app.db.models import Invoice
 
 from .models import CreateInvoice
+
+
+def get_invoice_by_id(db: Session, invoice_id: str) -> Optional[Invoice]:
+    return db.query(Invoice).filter_by(id=invoice_id).first()
 
 
 def save_invoice(db: Session, invoice: CreateInvoice) -> Invoice:
@@ -18,7 +22,13 @@ def save_invoice(db: Session, invoice: CreateInvoice) -> Invoice:
 
 
 def get_invoices_by_user(
-    db: Session, user_id: str, order_by: str = "due_date", limit: int = 100, offset: int = 0, desc: bool = False
+    db: Session,
+    user_id: str,
+    filter_by: str = None,
+    order_by: str = "due_date",
+    limit: int = 100,
+    offset: int = 0,
+    desc: bool = False,
 ) -> List[Invoice]:
     """Retrieves invoices from db
 
@@ -36,5 +46,21 @@ def get_invoices_by_user(
     order_by_stmt = getattr(Invoice, order_by)
     if desc:
         order_by_stmt = sa.desc(order_by_stmt)
-    invoices = db.query(Invoice).filter_by(user_id=user_id).order_by(order_by_stmt).limit(limit).offset(offset).all()
-    return invoices
+
+    invoices_query = db.query(Invoice).filter_by(user_id=user_id).order_by(order_by_stmt)
+    if filter_by == "paid":
+        invoices_query = invoices_query.filter_by(is_paid=True)
+    elif filter_by == "due":
+        invoices_query = invoices_query.filter_by(is_paid=False)
+
+    invoices_query = invoices_query.limit(limit).offset(offset)
+    return invoices_query.all()
+
+
+def update_paid_status_invoice(db: Session, invoice_id: str, is_paid: bool) -> Invoice:
+    invoice = get_invoice_by_id(db, invoice_id)
+    if not invoice:
+        raise ValueError("Could not find Invoice with provided Invoice.id")
+    invoice.is_paid = is_paid
+    db.commit()
+    return invoice

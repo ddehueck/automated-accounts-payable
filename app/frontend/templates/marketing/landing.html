@@ -1,0 +1,20 @@
+{% extends "components/simple-base.html" %}
+{% from "components/auth/signup-form.html" import signup_form %}
+
+{% block head %}
+<title>Welcome to Automatic Accounts Payable</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="flex min-h-screen items-center justify-center">
+        {{ signup_form() }}
+        <div class="p-5">
+            <h1 class="text-2xl font-extrabold">Accounts Payable Software to Simplify Your Processes</h1>
+            <h2 class="text-md font-medium">Eliminate your manual AP process with integrated payments.</h2>
+            <h2 class="text-md font-medium">Payments are automatically coded, so your accounting team can breathe a sigh of relief.</h2>
+          </div>
+    </div>
+</main>
+{% endblock %}

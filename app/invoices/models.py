@@ -1,7 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
+from typing import Union
 
-from pydantic import BaseModel
+import humanize
+from pydantic import BaseModel, validator
 
 from app.db.models import Invoice
 from app.invoices.ocr.models import RawInvoiceBody
@@ -10,6 +12,7 @@ from app.invoices.ocr.models import RawInvoiceBody
 class CreateInvoice(BaseModel):
     user_id: str
 
+    is_paid: bool = False
     vendor_name: str = None
     amount_due: Decimal = None
     currency: str = None
@@ -36,3 +39,26 @@ class CreateInvoice(BaseModel):
 
     def to_orm(self) -> Invoice:
         return Invoice(**self.dict())
+
+
+class PublicInvoice(BaseModel):
+    id: str
+    is_paid: bool = None
+    vendor_name: str = None
+    amount_due: Decimal = None
+    currency: str = None
+    due_date: datetime = None
+    invoice_id: str = None
+    humanized_due_date: Union[str, datetime] = None
+
+    @validator("humanized_due_date")
+    def humanize_datetime(cls, v: datetime) -> str:
+        if not isinstance(v, datetime):
+            raise ValueError("Must pass datetime for humanized date")
+        current_time = datetime.utcnow()
+        delta: timedelta = current_time - v
+        return humanize.naturaltime(delta)
+
+    @classmethod
+    def from_orm(cls, db_invoice: Invoice) -> "PublicInvoice":
+        return cls(humanized_due_date=db_invoice.due_date, **db_invoice.__dict__)

@@ -1,0 +1,23 @@
+{% macro signup_form() %}
+
+<form class="max-w-xl flex flex-col border rounded-lg border-slate-400" method="POST" action="/register">
+    <div class="p-5">
+      <label for="email" class="block text-sm font-medium text-gray-700"> Email address </label>
+      <div class="mb-3">
+        <input id="email" name="email" type="email" autocomplete="email" class="border p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+      </div>
+      
+      <label for="password" class="block text-sm font-medium text-gray-700"> Password </label>
+      <div class="mt-1">
+        <input id="password" name="password" type="password" class="border p-2 focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md">
+      </div>
+    </div>
+  
+    <div>
+      <button type="submit" class="w-full p-5 rounded-b-lg text-slate-800 font-extrabold text-lg bg-slate-100">
+        Get Started
+      </button>
+    </div>
+  </form>
+
+{% endmacro %}

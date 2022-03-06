@@ -11,8 +11,9 @@ from app.db.session import SessionLocal
 from app.frontend.templates import template_response
 from app.invoices.ocr.textract import InvoiceImageProcessor, textract_client
 
-from .db_utils import get_invoices_by_user, save_invoice
-from .models import CreateInvoice
+from .db_utils import (get_invoices_by_user, save_invoice,
+                       update_paid_status_invoice)
+from .models import CreateInvoice, PublicInvoice
 
 router = APIRouter()
 processor = InvoiceImageProcessor(textract_client)
@@ -22,15 +23,25 @@ processor = InvoiceImageProcessor(textract_client)
 async def get_home(
     request: Request,
     user_id: str = Depends(requires_authentication),
+    filter_by: str = None,
     order_by: str = "due_date",
     desc: bool = False,
     limit: int = 100,
     offset: int = 0,
 ):
     with SessionLocal() as db:
-        invoices = get_invoices_by_user(db, user_id, order_by=order_by, limit=limit, offset=offset, desc=desc)
-    invoices = [i.__dict__ for i in invoices]
+        invoices = get_invoices_by_user(
+            db, user_id, filter_by=filter_by, order_by=order_by, limit=limit, offset=offset, desc=desc
+        )
+    invoices = {i.id: PublicInvoice.from_orm(i).dict() for i in invoices}
     return template_response("./invoices/feed.html", {"request": request, "invoices": invoices})
+
+
+@router.post("/invoices/{invoice_id}")
+async def put_single_my_invoice(invoice_id: str, paid: bool, user_id: str = Depends(requires_authentication)):
+    with SessionLocal() as db:
+        update_paid_status_invoice(db, invoice_id, is_paid=paid)
+    return RedirectResponse(f"/home#{invoice_id}", status_code=HTTP_302_FOUND)
 
 
 @router.get("/upload-invoice", response_class=HTMLResponse)
@@ -57,5 +68,5 @@ async def post_upload_invoice(file: UploadFile = File(...), user_id: str = Depen
     raw_parse = parse_result.ok()
     formatted_invoice = CreateInvoice.from_raw_parse(user_id, raw_parse)
     with SessionLocal() as db:
-        save_invoice(db, formatted_invoice)
-    return RedirectResponse("/home?order_by=created_on&desc=True&index=1", status_code=HTTP_302_FOUND)
+        db_invoice = save_invoice(db, formatted_invoice)
+    return RedirectResponse(f"/home?order_by=created_on&desc=True&index={db_invoice.id}", status_code=HTTP_302_FOUND)

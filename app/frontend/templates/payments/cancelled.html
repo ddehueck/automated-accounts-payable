@@ -1,0 +1,20 @@
+{% extends "components/sidebar-base.html" %}
+  
+{% block head %}
+  <title>Payment Cancelled</title>
+  {{ super() }}
+{% endblock %}
+
+{% block content %}
+<main class="flex-1 relative z-0 overflow-y-auto focus:outline-none" tabindex="0">
+  
+  <div class="m-5 overflow-hidden">
+    <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
+      <div>
+        <h2 class="font-bold text-2xl text-gray-700">Your payment was cancelled.</h2>
+      </div>
+    </div>
+  </div>
+
+</main>
+{% endblock %}

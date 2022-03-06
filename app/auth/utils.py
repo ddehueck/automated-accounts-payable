@@ -22,14 +22,13 @@ def verify_pswd(pswd: str, hashed: str) -> bool:
 
 
 def requires_authentication(req: Request) -> str:
-    return "HUSHFSH"
     session = UserSession(**req.session)
     if not session.user_id:
         raise HTTPException(400, "Must be logged in.")
     return session.user_id
 
 
-def optional_authentication(req: Request) -> Optional[int]:
+def optional_authentication(req: Request) -> Optional[str]:
     # if not global_config.in_deployment:
     #     return 1
     # else:
@@ -41,7 +40,7 @@ def optional_authentication(req: Request) -> Optional[int]:
     return session.user_id
 
 
-def create_reset_pwd_token(db: Session, user_id: int) -> db_models.ResetPasswordToken:
+def create_reset_pwd_token(db: Session, user_id: str) -> db_models.ResetPasswordToken:
     token = db_models.ResetPasswordToken(user_id=user_id, token=token_urlsafe(128))
     db.add(token)
     db.commit()
