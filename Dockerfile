@@ -26,6 +26,3 @@ RUN poetry config virtualenvs.create false \
 
 # Creating folders, and files for a project:
 COPY . /
-
-# Upgrade DB - in deployment only - part of elastic beanstalk CD
-RUN if [ "$IN_DEPLOYMENT" = "true" ]; then alembic upgrade head; fi;
