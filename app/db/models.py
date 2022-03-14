@@ -82,6 +82,7 @@ class Invoice(Base):
     currency = Column(String)
     due_date = Column(DateTime)
     invoice_id = Column(String)
+    image_uri = Column(String)
 
     raw_vendor_name = Column(String)
     raw_amount_due = Column(String)

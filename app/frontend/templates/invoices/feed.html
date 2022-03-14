@@ -13,7 +13,7 @@
 <main class="flex w-full" x-data="{highlighted: window.location.href.split('#')[1]}">
     <!-- Invoice Feed Column -->
     <div class="w-1/3 h-screen overflow-scroll p-8 bg-gray-50 border-r-2 border-gray-200">
-        <h2 class="font-extrabold text-3xl mb-5">Upcoming Invoices</h2>
+        <h2 class="font-extrabold text-3xl mb-5">Your Invoices</h2>
         {{ query_menu() }}
 
         {% for id, data in invoices.items() %}

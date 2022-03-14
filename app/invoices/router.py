@@ -1,10 +1,14 @@
+from email.mime import image
 import fitz
+import ulid
+import time
 from fastapi import APIRouter, Depends, File, Request, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from result import Result
 from sqlalchemy import desc
 from starlette.status import HTTP_302_FOUND
+from loguru import logger as log
 
 from app.auth.utils import requires_authentication
 from app.db.session import SessionLocal
@@ -14,6 +18,7 @@ from app.invoices.ocr.textract import InvoiceImageProcessor, textract_client
 from .db_utils import (get_invoices_by_user, save_invoice,
                        update_paid_status_invoice)
 from .models import CreateInvoice, PublicInvoice
+from .s3_utils import upload_image_obj
 
 router = APIRouter()
 processor = InvoiceImageProcessor(textract_client)
@@ -67,6 +72,13 @@ async def post_upload_invoice(file: UploadFile = File(...), user_id: str = Depen
 
     raw_parse = parse_result.ok()
     formatted_invoice = CreateInvoice.from_raw_parse(user_id, raw_parse)
+
+    # Upload image to S3
+    extension = file.content_type.split("/")[1]
+    # TODO: return image uri
+    formatted_invoice.image_uri = upload_image_obj(file_data, f"{user_id}-{str(ulid.ulid())}", extension)
+
     with SessionLocal() as db:
         db_invoice = save_invoice(db, formatted_invoice)
+
     return RedirectResponse(f"/home?order_by=created_on&desc=True&index={db_invoice.id}", status_code=HTTP_302_FOUND)

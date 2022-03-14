@@ -18,6 +18,7 @@ class CreateInvoice(BaseModel):
     currency: str = None
     due_date: datetime = None
     invoice_id: str = None
+    image_uri: str = None
 
     raw_vendor_name: str = None
     raw_amount_due: str = None
