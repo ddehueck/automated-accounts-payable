@@ -1,7 +1,11 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import Depends, FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.status import HTTP_302_FOUND
+
+from app.auth.utils import optional_authentication
 
 from .auth.router import router as auth_router
 from .config import config as global_config
@@ -31,5 +35,11 @@ global_router = APIRouter()
 @global_router.get("/health")
 def get_health():
     return True
+
+@global_router.get("/", response_class=RedirectResponse)
+def get_index(user_id: str = Depends(optional_authentication)):
+    if user_id:
+        return RedirectResponse("/home", status_code=HTTP_302_FOUND)
+    return RedirectResponse("/landing", status_code=HTTP_302_FOUND)
 
 app.include_router(global_router)
