@@ -9,6 +9,12 @@
                 <h2 class="sm:text-3xl md:text-4xl tracking-tight font-extrabold text-white">Sign in to your account</h2>
             </div>
 
+            {% if request.query_params.get('error') %}
+            <div class="rounded-md bg-red-50 p-4 border border-red-800">
+              <h3 class="text-sm font-medium text-red-800">{{request.query_params.get('error')}}</h3>
+            </div>
+            {% endif %}
+
             <div class="bg-white sm:max-w-md sm:w-full sm:mx-auto sm:rounded-lg sm:overflow-hidden">
                 <div class="px-4 pt-8 pb-2 sm:px-10">
                     <div>
@@ -32,7 +38,7 @@
                 <div class="px-4 py-6 bg-gray-50 border-t-2 border-gray-200 sm:px-10">
                     <p class="text-xs leading-5 text-gray-500">
                         Don't have an account?
-                        <a class="font-medium text-gray-900 hover:underline" href="/register">Register here</a> or
+                        <a class="font-medium text-gray-900 hover:underline" href="/">Register here</a> or
                         <a class="font-medium text-gray-900 hover:underline" href="/reset-password">Forgot your password?</a>
                     </p>
                 </div>

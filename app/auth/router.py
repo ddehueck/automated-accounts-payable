@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+import imp
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, Form, Request
 from fastapi.exceptions import HTTPException
@@ -19,20 +21,21 @@ from .utils import hash_pswd, requires_authentication, verify_pswd
 router = APIRouter()
 
 
-@router.get("/register", response_class=HTMLResponse)
-async def get_register(request: Request):
-    return template_response("./auth/register.html", {"request": request})
+# @router.get("/register", response_class=HTMLResponse)
+# async def get_register(request: Request):
+#     return template_response("./auth/register.html", {"request": request})
 
 
 # TODO: Proper redirects
 @router.post("/register", response_class=RedirectResponse)
-async def post_register(request: Request, email: str = Form(...), password: str = Form(..., min_length=6)):
+async def post_register(request: Request, name: str = Form(...), email: str = Form(...), password: str = Form(..., min_length=6)):
     with SessionLocal() as db:
         existing_user = db.query(db_models.User).filter_by(email=email).first()
         if existing_user:
-            return RedirectResponse("/register?error=true", status_code=HTTP_302_FOUND)
+            params = urlencode({"error": "This email has already been registered."})
+            return RedirectResponse(f"/landing?{params}", status_code=HTTP_302_FOUND)
 
-        new_user = db_models.User(email=email, password_hash=hash_pswd(password))
+        new_user = db_models.User(name=name, email=email, password_hash=hash_pswd(password))
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
@@ -52,10 +55,12 @@ async def post_login(request: Request, email: str = Form(...), password: str = F
     with SessionLocal() as db:
         existing_user: db_models.User = db.query(db_models.User).filter_by(email=email).first()
         if not existing_user:
-            return RedirectResponse("/login?error=true", status_code=HTTP_302_FOUND)
+            params = urlencode({"error": "Password or email is incorrect."})
+            return RedirectResponse(f"/login?{params}", status_code=HTTP_302_FOUND)
 
         if not verify_pswd(password, existing_user.password_hash):
-            return RedirectResponse("/login?error=true", status_code=HTTP_302_FOUND)
+            params = urlencode({"error": "Password or email is incorrect."})
+            return RedirectResponse(f"/login?{params}", status_code=HTTP_302_FOUND)
 
     set_session(request, UserSession(user_id=existing_user.id))
     return RedirectResponse("/", status_code=HTTP_302_FOUND)

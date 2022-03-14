@@ -20,6 +20,7 @@ class User(Base):
     organization_id = Column(String, ForeignKey("organizations.id"))
     invoices = relationship("Invoice")
 
+    name = Column(String, nullable=True)
     paid_plan = Column(String, nullable=True)
     stripe_session_id = Column(String, nullable=True)
     email = Column(String, nullable=False, unique=True)

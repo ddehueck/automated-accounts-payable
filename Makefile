@@ -40,11 +40,11 @@ logs:
 # DB management
 PHONY: upgrade-db
 upgrade-db: compose-up
-	docker exec $$(docker ps -aqf "name=automated-accounts-payable_app_1") alembic upgrade head
+	alembic upgrade head
 
 PHONY: revision-auto
 revision-auto:
-	docker exec $$(docker ps -aqf "name=automated-accounts-payable_app_1") alembic revision --autogenerate
+	alembic revision --autogenerate
 
 # Deployment
 release.zip:
