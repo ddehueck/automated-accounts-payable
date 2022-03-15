@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class User(BaseModel):
     id: str
     organization_id: str = None
+    name: str
     email: str
     password_hash: str
     paid_plan: str = None
