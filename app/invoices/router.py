@@ -76,7 +76,7 @@ async def post_upload_invoice(file: UploadFile = File(...), user_id: str = Depen
     # Upload image to S3
     extension = file.content_type.split("/")[1]
     # TODO: return image uri
-    formatted_invoice.image_uri = upload_image_obj(file_data, f"{user_id}-{str(ulid.ulid())}", extension)
+    formatted_invoice.image_uri = upload_image_obj(file_data, f"{str(ulid.ulid())}", extension)
 
     with SessionLocal() as db:
         db_invoice = save_invoice(db, formatted_invoice)

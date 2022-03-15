@@ -25,8 +25,9 @@ x-data="{
         <div x-cloak x-show="showFilterMenu" x-transition:enter="ease-linear duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition-opacity ease-linear duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="origin-top-right absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
             <div class="py-1" role="none">
                 <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                <span x-on:click="currentUrl.searchParams.set('filter_by', 'paid'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Paid</span>
-                <span x-on:click="currentUrl.searchParams.set('filter_by', 'due'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-1">Unpaid</span>
+                <span x-on:click="currentUrl.searchParams.set('filter_by', 'all'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm hover:bg-slate-100" role="menuitem" tabindex="-1" id="menu-item-0">All</span>
+                <span x-on:click="currentUrl.searchParams.set('filter_by', 'paid'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm hover:bg-slate-100" role="menuitem" tabindex="-1" id="menu-item-0">Paid</span>
+                <span x-on:click="currentUrl.searchParams.set('filter_by', 'due'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm hover:bg-slate-100" role="menuitem" tabindex="-1" id="menu-item-1">Unpaid</span>
             </div>
         </div>
     </div>
@@ -46,9 +47,9 @@ x-data="{
         <div x-cloak x-show="showSortMenu" x-transition:enter="ease-linear duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition-opacity ease-linear duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95" class="origin-top-right absolute left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
             <div class="py-1" role="none">
                 <!-- Active: "bg-gray-100 text-gray-900", Not Active: "text-gray-700" -->
-                <span x-on:click="currentUrl.searchParams.set('sort_by', 'due_date'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-0">Due Date</span>
-                <span x-on:click="currentUrl.searchParams.set('sort_by', 'amount_due'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-1">Amount Due</span>
-                <span x-on:click="currentUrl.searchParams.set('sort_by', 'date_added'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm" role="menuitem" tabindex="-1" id="menu-item-1">Date Added</span>
+                <span x-on:click="currentUrl.searchParams.set('sort_by', 'due_date'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm hover:bg-slate-100" role="menuitem" tabindex="-1" id="menu-item-0">Due Date</span>
+                <span x-on:click="currentUrl.searchParams.set('sort_by', 'amount_due'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm hover:bg-slate-100" role="menuitem" tabindex="-1" id="menu-item-1">Amount Due</span>
+                <span x-on:click="currentUrl.searchParams.set('sort_by', 'date_added'); go();" class="cursor-pointer text-gray-700 block px-4 py-2 text-sm hover:bg-slate-100" role="menuitem" tabindex="-1" id="menu-item-1">Date Added</span>
             </div>
         </div>
     </div>

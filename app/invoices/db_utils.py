@@ -52,6 +52,9 @@ def get_invoices_by_user(
         invoices_query = invoices_query.filter_by(is_paid=True)
     elif filter_by == "due":
         invoices_query = invoices_query.filter_by(is_paid=False)
+    elif filter_by == "all":
+        # TODO Add enumerations
+        pass
 
     invoices_query = invoices_query.limit(limit).offset(offset)
     return invoices_query.all()
