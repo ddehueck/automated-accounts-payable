@@ -13,3 +13,7 @@ router = APIRouter()
 @router.get("/landing", response_class=HTMLResponse)
 async def get_landing(request: Request):
     return template_response("./marketing/landing.html", {"request": request})
+
+@router.get("/how-it-works", response_class=HTMLResponse)
+async def get_landing(request: Request):
+    return template_response("./marketing/how-it-works.html", {"request": request})

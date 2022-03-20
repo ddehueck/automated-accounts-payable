@@ -1,0 +1,53 @@
+{% extends "components/simple-base.html" %}
+{% from "components/marketing/footer.html" import marketing_footer %}
+{% from "components/marketing/navbar.html" import marketing_navbar %}
+
+{% block head %}
+<title>Welcome to Automatic Accounts Payable</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+
+<div class="mt-6">
+    {{marketing_navbar()}}
+</div>
+
+<main class="py-8">
+    <div class="relative px-4 sm:px-6 lg:px-8">
+
+        <div class="text-lg max-w-prose mx-auto">
+            <h1>
+                <span class="block text-base text-center text-indigo-600 font-semibold tracking-wide uppercase">Easy Invoice Management</span>
+                <span class="mt-2 block text-3xl text-center leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">How Automated Invoice Processing Works</span>
+            </h1>
+        </div>
+        <div class="mt-6 prose prose-indigo prose-lg text-gray-500 mx-auto">
+            <div>
+                <img class="mx-auto" width="500" src="/static/images/invoice-automation-process.png" alt="The Invoice Processing Cycle">
+            </div>
+            <h2>What Is Invoice Processing?</h2>
+            <p>Invoice automation processing is the process your company's accounts payable team uses to handle invoices from various Vendors. It starts when you receive an invoice and finishes when payment has been made and recorded.</p>
+            <p>An OCR software reads and extracts the letters or numbers individually in a document to form proper words and sentences. Therefore,  OCR enables you to read, search, and edit such documents in the original format.</p>
+            <h2>Advantages of AP Automation</h2>
+            <ul role="list">
+                <li>Reduce human error.</li>
+                <li>Eliminate human data entry.</li>
+                <li>Easy track of invoices.</li>
+                <li>Avoid late payments which may lead to additional costs.</li>
+                <li>Integrating invoice processing with accounting.</li>
+                <li>Reduce manual work.</li>
+                <li>More Early pay discounts.</li>
+                <li>Increase Productivity.</li>
+                <li>View AP Aging Reports</li>
+              </ul>
+            <p> It enables companies to pay all of their open invoices, while significantly reducing the time usually required for the AP process. Quick, easy, affordable.</p>
+            <div>
+                <img class="mx-auto" width="500" src="/static/images/ap-savings.png" alt="The Invoice Processing Cycle">
+            </div>
+        </div>
+    </div>
+</main>
+{{ marketing_footer(request) }}
+
+{% endblock %}

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
+from enum import Enum
 from typing import Union
 
 import humanize
@@ -64,3 +65,27 @@ class PublicInvoice(BaseModel):
     @classmethod
     def from_orm(cls, db_invoice: Invoice) -> "PublicInvoice":
         return cls(humanized_due_date=db_invoice.due_date, **db_invoice.__dict__)
+
+
+class CategoryEnum(str, Enum):
+    purchases = "purchases"
+    maintenance_and_repair = "maintenance_and_repair"
+    entertainment = "entertainment"
+    travel = "travel"
+    equipment = "equipment"
+    internet = "internet"
+    hosting	= "hosting"
+    furniture = "furniture"
+    office_supplies = "office_supplies"
+    vehicles = "vehicles"
+    accommodation = "accommodation"
+    continuing_education = "continuing_education"
+    conferences_and_seminars = "conferences_and_seminars"
+    professional_fees = "professional_fees"
+    marketing_and_advertising = "marketing_and_advertising"
+    business_insurance = "business_insurance"
+    software_and_subscription_services = "software_and_subscription_services"
+    computer_repair = "computer_repair"
+    fuel = "fuel"
+    uncategorized_expenses = "uncategorized_expenses"
+    other = "other"

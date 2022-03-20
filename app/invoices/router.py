@@ -43,10 +43,17 @@ async def get_home(
 
 
 @router.post("/invoices/{invoice_id}")
-async def put_single_my_invoice(invoice_id: str, paid: bool, user_id: str = Depends(requires_authentication)):
+async def post_single_invoice(invoice_id: str, paid: bool, user_id: str = Depends(requires_authentication)):
     with SessionLocal() as db:
         update_paid_status_invoice(db, invoice_id, is_paid=paid)
     return RedirectResponse(f"/home#{invoice_id}", status_code=HTTP_302_FOUND)
+
+
+@router.put("/invoices/{invoice_id}")
+async def put_single_invoice(invoice_id: str, user_id: str = Depends(requires_authentication)):
+    # Add categories
+    with SessionLocal() as db:
+        pass
 
 
 @router.get("/upload-invoice", response_class=HTMLResponse)

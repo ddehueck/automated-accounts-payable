@@ -8,7 +8,7 @@
     </div>
 
     <div class="mx-8 mt-4 mb-8">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between items-center mt-8">
             <h2 class="font-extrabold text-3xl text-gray-800">Invoice Details</h2>
 
             {% if not invoice_data.is_paid %}
@@ -51,6 +51,9 @@
     </div>
 
     <div class="p-6">
+        {% if not invoice_data.invoice_id%}
+        <p class="text-center">Image Not Found.</p>
+        {% endif %}
         <img src={{invoice_data.image_uri}} alt="Invoice {{invoice_data.invoice_id}}">
     </div>
 

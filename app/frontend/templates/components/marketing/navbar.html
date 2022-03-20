@@ -1,0 +1,12 @@
+
+{% macro marketing_navbar() %}
+<nav class="relative max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6" aria-label="Global">
+    <div class="flex">
+        <a href="/login" class="inline-flex items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"> Log in </a>
+    </div>
+    <div class="flex">
+        <a href="/landing" class="text-slate-800 hover:text-slate-600 hover:underline px-3 py-2 rounded-md text-sm font-medium"> Home </a>
+        <a href="/how-it-works" class="text-slate-800 hover:underline hover:text-slate-600 px-3 py-2 rounded-md text-sm font-medium"> How it Works </a>
+    </div>
+</nav>
+{% endmacro %}
