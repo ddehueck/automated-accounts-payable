@@ -1,0 +1,42 @@
+{% macro sidebar() %}
+<!-- Needs to be in flex container -->
+<nav aria-label="sidebar" class="hidden md:block md:flex-shrink-0 h-screen w-64 overflow-scroll md:bg-zinc-100 md:overflow-y-auto">
+
+    <!-- Your Account Page -->
+    <div class="relative flex flex-col items-start justify-center px-8 py-10 space-y-8">
+        <a href="/dashboard" class="text-zinc-500 font-normal flex-shrink-0 inline-flex items-center justify-center rounded-lg">
+            <span class="sr-only">Home</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+            </svg>
+            Home
+        </a>
+
+        <a href="/home" class="text-zinc-500 flex-shrink-0 inline-flex items-center justify-center rounded-lg">
+            <span class="sr-only">Upload Invoice</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 18 18" fill="currentColor">
+              <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clip-rule="evenodd" />
+            </svg>
+            Explore Invoices
+        </a>
+
+        <a href="/home" class="text-zinc-500 flex-shrink-0 inline-flex items-center justify-center rounded-lg">
+            <span class="sr-only">Upload Invoice</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3" viewBox="0 0 18 18" fill="currentColor">
+              <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clip-rule="evenodd" />
+            </svg>
+            Upload Invoice
+        </a>
+
+
+        <a href="/settings/account" class="text-zinc-500 flex-shrink-0 inline-flex items-center justify-center rounded-lg">
+            <span class="sr-only">Your Account</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd" />
+            </svg>
+            Your Account
+        </a>
+
+    </div>
+</nav>
+{% endmacro %}

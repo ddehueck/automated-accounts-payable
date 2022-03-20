@@ -1,10 +1,10 @@
-{% from "components/global/skinny-sidebar.html" import skinny_sidebar %}
+{% from "components/global/standard-sidebar.html" import sidebar %}
 
 <html lang="en">
   <head>
     {% block head %} {% include 'global-head.html' %} {% endblock %}
   </head>
   <body class="flex">
-    {{ skinny_sidebar() }} {% block content %} {% endblock %}
+    {{ sidebar() }} {% block content %} {% endblock %}
   </body>
 </html>

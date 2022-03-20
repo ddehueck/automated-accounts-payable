@@ -14,6 +14,11 @@ from .models import User
 router = APIRouter()
 
 
+@router.get("/dashboard", response_class=HTMLResponse)
+async def get_dashboard(request: Request, user_id: str = Depends(requires_authentication)):
+    return template_response("./users/dashboard.html", {"request": request})
+
+
 @router.get("/settings/account", response_class=HTMLResponse)
 async def get_settings_account(request: Request, user_id: str = Depends(requires_authentication)):
     with SessionLocal() as db:
