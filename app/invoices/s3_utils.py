@@ -15,7 +15,12 @@ s3_client = boto3.client('s3',
 )
 
 
-def upload_image_obj(object: bytes, image_name: str, extension: str):
+def get_image_uri(image_name: str, extension: str):
+    return f"https://{config.s3_bucket_name}.s3.amazonaws.com/{image_name}.{extension}"
+
+
+def upload_image_obj(object: bytes, image_name: str, extension: str) -> str:
     start = time.time()
     s3_client.upload_fileobj(io.BytesIO(object), config.s3_bucket_name, f'{image_name}.{extension}')
     log.debug(f"Uploaded image to s3 in {round(time.time() - start, ndigits=2)}")
+    return get_image_uri(image_name, extension)

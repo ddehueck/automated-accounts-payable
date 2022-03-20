@@ -50,6 +50,7 @@ class PublicInvoice(BaseModel):
     currency: str = None
     due_date: datetime = None
     invoice_id: str = None
+    image_uri: str = None
     humanized_due_date: Union[str, datetime] = None
 
     @validator("humanized_due_date")

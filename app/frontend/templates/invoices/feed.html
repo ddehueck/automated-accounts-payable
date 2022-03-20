@@ -25,7 +25,7 @@
     </div>
 
     <!-- Single Item View-->
-    <div class="w-2/3 h-screen">
+    <div class="w-2/3 h-screen overflow-scroll">
         <div x-show="highlighted == null" x-transition:enter.duration.500ms>{{ invoice_upload_section() }}</div>
         <div x-cloak x-show="highlighted!= null">
             {% for id, data in invoices.items() %}
