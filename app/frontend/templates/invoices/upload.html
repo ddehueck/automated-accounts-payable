@@ -1,0 +1,13 @@
+{% extends "components/sidebar-base.html" %}
+{% from "components/invoices/upload-section.html" import invoice_upload_section %}
+
+{% block head %}
+<title>Upload Invoice | Easy Invoice Management</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<main class="w-full">
+    {{ invoice_upload_section()}}
+</main>
+{% endblock %}

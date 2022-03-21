@@ -1,0 +1,15 @@
+{% extends "components/sidebar-base.html" %}
+{% from "components/invoices/single-view.html" import single_invoice_view %}
+
+{% block head %}
+<title>{{data.invoice_id}} | Easy Invoice Management</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<main class="w-full">
+    <section class="max-h-screen overflow-y-scroll py-8 px-10">
+        {{ single_invoice_view(data)}}
+    </section>
+</main>
+{% endblock %}

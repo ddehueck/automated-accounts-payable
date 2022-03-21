@@ -1,8 +1,10 @@
+from datetime import datetime
 from typing import List, Optional
 
 import sqlalchemy as sa
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
+from sqlalchemy.sql.expression import func
 
 from app.db.models import Invoice
 
@@ -67,3 +69,15 @@ def update_paid_status_invoice(db: Session, invoice_id: str, is_paid: bool) -> I
     invoice.is_paid = is_paid
     db.commit()
     return invoice
+
+
+def get_num_due_soon(db: sa.orm.Session, user_id: str) -> int:
+    return db.query(func.count(Invoice.id)).filter_by(user_id=user_id, is_paid=False).filter(Invoice.due_date > datetime.utcnow()).scalar() or 0
+
+
+def get_num_overdue(db: sa.orm.Session, user_id: str) -> int:
+    return db.query(func.count(Invoice.id)).filter_by(user_id=user_id, is_paid=False).filter(Invoice.due_date < datetime.utcnow()).scalar() or 0
+
+    
+def get_num_paid(db: sa.orm.Session, user_id: str) -> int:
+    return db.query(func.count(Invoice.id)).filter_by(user_id=user_id, is_paid=True).scalar() or 0

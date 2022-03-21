@@ -1,10 +1,11 @@
 from email.mime import image
+from urllib import request
 import fitz
 import ulid
-import time
 from fastapi import APIRouter, Depends, File, Request, UploadFile
 from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.encoders import jsonable_encoder
 from result import Result
 from sqlalchemy import desc
 from starlette.status import HTTP_302_FOUND
@@ -15,7 +16,7 @@ from app.db.session import SessionLocal
 from app.frontend.templates import template_response
 from app.invoices.ocr.textract import InvoiceImageProcessor, textract_client
 
-from .db_utils import (get_invoices_by_user, save_invoice,
+from .db_utils import (get_invoice_by_id, get_invoices_by_user, save_invoice,
                        update_paid_status_invoice)
 from .models import CreateInvoice, PublicInvoice
 from .s3_utils import upload_image_obj
@@ -40,6 +41,14 @@ async def get_home(
         )
     invoices = {i.id: PublicInvoice.from_orm(i).dict() for i in invoices}
     return template_response("./invoices/feed.html", {"request": request, "invoices": invoices})
+
+
+@router.get("/invoices/{invoice_id}")
+async def get_single_invoice(request: Request, invoice_id: str, user_id: str = Depends(requires_authentication)):
+    with SessionLocal() as db:
+        invoice = get_invoice_by_id(db, invoice_id)
+        invoice = PublicInvoice.from_orm(invoice)
+    return template_response('./invoices/single-invoice.html', {"request": request, "data": jsonable_encoder(invoice)})
 
 
 @router.post("/invoices/{invoice_id}")
@@ -86,6 +95,7 @@ async def post_upload_invoice(file: UploadFile = File(...), user_id: str = Depen
     formatted_invoice.image_uri = upload_image_obj(file_data, f"{str(ulid.ulid())}", extension)
 
     with SessionLocal() as db:
+        # TODO: Use file data to upsert based on image md5 hash
         db_invoice = save_invoice(db, formatted_invoice)
 
     return RedirectResponse(f"/home?order_by=created_on&desc=True&index={db_invoice.id}", status_code=HTTP_302_FOUND)
