@@ -46,9 +46,11 @@ def save_invoice(db: Session, invoice: CreateInvoice) -> Invoice:
     return db_invoice
 
 
-def get_invoices_by_user(
+def query_invoices(
     db: Session,
-    user_id: str,
+    *,
+    user_id: str = None,
+    vendor_id: str = None,
     filter_by: str = None,
     order_by: str = "due_date",
     limit: int = 100,
@@ -59,20 +61,28 @@ def get_invoices_by_user(
 
     Args:
         db (Session): SessionLocal object
-        user_id (str): User to pull invoices from
+        user_id (str): User to pull invoices from.
+        vendor_id (str): Vendor to pull invoice from
         order_by (str, optional): Name of column to order by. Defaults to "due_date".
         desc (bool, optional): Indicates if results should be sorted in a desc fashion or not (i.e. asc). Defaults to False.
         limit (int, optional): Max number of results to be returned. Defaults to 100.
         offset (int, optional): Offset to allow for pagination. Defaults to 0.
 
+    NOTE: Either one of or both of vendor_id and user_id must be provided
+
     Returns:
         List[Invoice]
     """
-    order_by_stmt = getattr(Invoice, order_by)
-    if desc:
-        order_by_stmt = sa.desc(order_by_stmt)
+    if not user_id and not vendor_id:
+        raise Exception("At least on of user_id and vendor_id must be provided")
 
-    invoices_query = db.query(Invoice).filter_by(user_id=user_id).order_by(order_by_stmt)
+    invoices_query = db.query(Invoice)
+
+    if user_id:
+        invoices_query = invoices_query.filter_by(user_id=user_id)
+    if vendor_id:
+        invoices_query = invoices_query.filter_by(vendor_id=vendor_id)
+
     if filter_by == "paid":
         invoices_query = invoices_query.filter_by(is_paid=True)
     elif filter_by == "due":
@@ -81,8 +91,27 @@ def get_invoices_by_user(
         # TODO Add enumerations
         pass
 
+    order_by_stmt = getattr(Invoice, order_by)
+    if desc:
+        order_by_stmt = sa.desc(order_by_stmt)
+    invoices_query.order_by(order_by_stmt)
+
     invoices_query = invoices_query.limit(limit).offset(offset)
     return invoices_query.all()
+
+
+def get_invoices_by_user(
+    db: Session,
+    user_id: str,
+    filter_by: str = None,
+    order_by: str = "due_date",
+    limit: int = 100,
+    offset: int = 0,
+    desc: bool = False,
+) -> List[Invoice]:
+    return query_invoices(
+        db, user_id=user_id, filter_by=filter_by, order_by=order_by, limit=limit, offset=offset, desc=desc
+    )
 
 
 def update_paid_status_invoice(db: Session, invoice_id: str, is_paid: bool) -> Invoice:
@@ -132,6 +161,8 @@ def get_category_by_name(db: sa.orm.Session, name: str, user_id: str) -> Optiona
 # TODO: Gotta do these upserts right
 # TODO: user_id should translate to organization id
 def ensure_category_by_name(db: sa.orm.Session, name: str, user_id: str) -> Category:
+    name = name.strip()
+
     existing = db.query(Category).filter_by(name=name, user_id=user_id).first()
     if existing:
         return existing

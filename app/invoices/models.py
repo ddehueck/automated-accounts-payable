@@ -8,6 +8,23 @@ from pydantic import BaseModel, validator
 
 from app.db.models import Invoice
 from app.invoices.ocr.models import RawInvoiceBody
+from app.utils import format_date_american
+
+
+class InvoiceStatusEnum(str, Enum):
+    due = "due"
+    overdue = "overdue"
+    paid = "paid"
+
+    @classmethod
+    def get_status(cls, is_paid: bool, due_date: datetime = None) -> "InvoiceStatusEnum":
+        if is_paid:
+            return cls.paid
+
+        if datetime.utcnow() > due_date:
+            return cls.overdue
+
+        return cls.due
 
 
 class CreateInvoice(BaseModel):
@@ -48,6 +65,7 @@ class PublicInvoice(BaseModel):
     is_paid: bool = None
     vendor_name: str = None
     amount_due: Union[str, Decimal] = None
+    status: str = None
     currency: str = None
     due_date: datetime = None
     invoice_id: str = None
@@ -64,12 +82,6 @@ class PublicInvoice(BaseModel):
         delta: timedelta = current_time - v
         return humanize.naturaltime(delta)
 
-    @validator("american_due_date")
-    def make_date_american(cls, v: datetime) -> str:
-        if not isinstance(v, datetime):
-            raise ValueError("Must pass datetime for humanized date")
-        return v.strftime("%B %-d, %Y")
-
     @validator("amount_due")
     def enforce_two_decimal_places(cls, v: Decimal) -> str:
         return f"{Decimal(v):.2f}"
@@ -77,10 +89,12 @@ class PublicInvoice(BaseModel):
     @classmethod
     def from_orm(cls, db_invoice: Invoice) -> "PublicInvoice":
         categories = [c.category.name for c in db_invoice.category_links]
+        status_enum = InvoiceStatusEnum.get_status(db_invoice.is_paid, db_invoice.due_date)
         return cls(
             categories=categories,
             humanized_due_date=db_invoice.due_date,
-            american_due_date=db_invoice.due_date,
+            american_due_date=format_date_american(db_invoice.due_date),
+            status=status_enum.value,
             **db_invoice.__dict__,
         )
 

@@ -1,0 +1,62 @@
+{% extends "components/sidebar-base.html" %}
+{% from "components/invoices/invoice-table.html" import invoice_table %}
+
+{% block head %}
+<title>{{vendor.name}} | Easy Invoice Management</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<main class="w-full">
+    <div class="h-screen max-w-6xl mx-auto overflow-scroll p-8">
+        <section class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:px-6">
+                <h2 class="text-xl leading-6 font-bold text-gray-900">{{vendor.name}}</h2>
+            </div>
+            <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+                <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-3">
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Date Added</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{vendor.created_on}}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Last Invoice Added</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{vendor.last_added_on}}</dd>
+                    </div>
+                    <div class="sm:col-span-1">
+                        <dt class="text-sm font-medium text-gray-500">Contact Email</dt>
+                        <dd class="mt-1 text-sm text-gray-900">{{vendor.contact_email}}</dd>
+                    </div>
+                </dl>
+
+                <!-- Stats -->
+                <div>
+                    <dl class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+                        <div class="overflow-hidden">
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Paid</dt>
+                            <dd class="mt-1 text-3xl font-semibold text-gray-900">{{vendor.currency}}{{vendor.total_paid}}</dd>
+                        </div>
+
+                        <div class="overflow-hidden">
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Due</dt>
+                            <dd class="mt-1 text-3xl font-semibold text-gray-900">{{vendor.currency}}{{vendor.total_due}}</dd>
+                        </div>
+
+                        <div class="overflow-hidden">
+                            <dt class="text-sm font-medium text-gray-500 truncate">Total Invoices Managed</dt>
+                            <dd class="mt-1 text-3xl font-semibold text-gray-900">{{vendor.total_invoice_count}}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+            </div>
+        </section>
+
+        {% if invoices %}
+        <section>
+            {{invoice_table(invoices)}}
+        </section>
+        {% endif %}
+    </div>
+</main>
+{% endblock %}

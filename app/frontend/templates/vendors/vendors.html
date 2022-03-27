@@ -1,4 +1,5 @@
 {% extends "components/sidebar-base.html" %}
+{% from "components/vendors/vendor-card.html" import vendor_card %}
 
 {% block head %}
 <title>Vendors | Easy Invoice Management</title>
@@ -6,6 +7,19 @@
 {% endblock %}
 
 {% block content %}
-<main>
+<main class="w-full">
+    <div class="h-screen overflow-scroll p-8">
+        <h2 class="font-extrabold text-3xl mb-5">Vendors</h2>
+
+        <section class="flex justify-center">
+            <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {% for vendor in vendors %}
+                <li>
+                    {{vendor_card(vendor)}}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+    </div>
 </main>
 {% endblock %}
