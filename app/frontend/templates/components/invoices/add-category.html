@@ -56,11 +56,11 @@
             this.inputValue = option
         }
     }"
-    class="my-3"
+    class="mb-3"
 >
 
     <!-- View Categories -->
-    <div class="flex items-center my-2">
+    <div class="flex items-center mt-2">
         <span class="text-sm font-medium text-gray-500">Categories</span>
         <span x-cloak x-show="!editMode && savedCategories.length > 0" @click="editMode=true" class="ml-1 text-xs font-medium text-gray-500 hover:cursor-pointer hover:underline">(edit)</span>
         <span x-cloak x-show="editMode" @click="editMode=false" class="ml-1 text-xs font-medium text-gray-500 hover:cursor-pointer hover:underline">(done)</span>

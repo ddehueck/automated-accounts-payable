@@ -34,7 +34,7 @@ async def get_home(
     user_id: str = Depends(requires_authentication),
     filter_by: str = None,
     order_by: str = "due_date",
-    desc: bool = False,
+    desc: bool = True,
     limit: int = 100,
     offset: int = 0,
 ):
@@ -42,7 +42,7 @@ async def get_home(
         invoices = get_invoices_by_user(
             db, user_id, filter_by=filter_by, order_by=order_by, limit=limit, offset=offset, desc=desc
         )
-    invoices = {i.id: PublicInvoice.from_orm(i).dict() for i in invoices}
+        invoices = {i.id: PublicInvoice.from_orm(i).dict() for i in invoices}
     return template_response("./invoices/inbox.html", {"request": request, "invoices": invoices})
 
 
@@ -94,7 +94,7 @@ async def post_upload_invoice(file: UploadFile = File(...), user_id: str = Depen
         # TODO: Use file data to upsert based on image md5 hash
         db_invoice = save_invoice(db, formatted_invoice)
 
-    return RedirectResponse(f"/home?order_by=created_on&desc=True&index={db_invoice.id}", status_code=HTTP_302_FOUND)
+    return RedirectResponse(f"/invoices/{db_invoice.id}", status_code=HTTP_302_FOUND)
 
 # API routes - no redirects - pure actions
 

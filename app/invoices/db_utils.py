@@ -8,7 +8,7 @@ from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
-from app.db.models import Category, CategoryInvoiceAssociation, Invoice
+from app.db.models import Category, CategoryInvoiceAssociation, Invoice, Vendor
 
 from .models import CreateInvoice
 
@@ -17,12 +17,33 @@ def get_invoice_by_id(db: Session, invoice_id: str) -> Optional[Invoice]:
     return db.query(Invoice).filter_by(id=invoice_id).first()
 
 
-def save_invoice(db: Session, invoice: CreateInvoice) -> Invoice:
-    db_model = invoice.to_orm()
-    db.add(db_model)
+def ensure_vendor_by_name(db: sa.orm.Session, vendor_name: str, user_id: str) -> Vendor:
+    # TODO: proper upsert? And need to set organization id.
+    existing = db.query(Vendor).filter_by(name=vendor_name, user_id=user_id).first()
+    if existing:
+        return existing
+
+    new = Vendor(
+        name=vendor_name,
+        user_id=user_id,
+    )
+
+    db.add(new)
     db.commit()
-    db.refresh(db_model)
-    return db_model
+    db.refresh(new)
+    return new
+
+
+def save_invoice(db: Session, invoice: CreateInvoice) -> Invoice:
+    db_invoice = invoice.to_orm()
+    db_vendor = ensure_vendor_by_name(db, db_invoice.vendor_name, invoice.user_id)
+
+    db_invoice.vendor_id = db_vendor.id
+    
+    db.add(db_invoice)
+    db.commit()
+    db.refresh(db_invoice)
+    return db_invoice
 
 
 def get_invoices_by_user(
@@ -162,3 +183,4 @@ def remove_category_from_invoice(db: sa.orm.Session, user_id: str, invoice_id: s
 
     db.delete(existing_link)
     db.commit()
+

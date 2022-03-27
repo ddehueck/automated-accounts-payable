@@ -1,68 +1,69 @@
 {% macro single_invoice_view(invoice_data) %}
 {% from "components/invoices/add-category.html" import add_category_form %}
 
-<div x-data class="rounded-lg border-2 border-gray-200 w-full">
+<div x-data class="container max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full">
 
-    <div class="flex justify-between items-center bg-gray-200 p-4">
-        <span class="text-lg text-gray-700 font-medium">Total to Pay</span>
-        <span class="font-extrabold text-2xl text-gray-800">{{invoice_data.currency}}{{invoice_data.amount_due}}</span>
-    </div>
+        <section class="mb-8">
+            <div class="flex justify-between items-center">
+                <h2 class="font-extrabold text-3xl text-gray-800">Invoice Details</h2>
 
-    <div class="mx-8 mt-4 mb-8">
-        <div class="flex justify-between items-center mt-8">
-            <h2 class="font-extrabold text-3xl text-gray-800">Invoice Details</h2>
-
-            {% if not invoice_data.is_paid %}
-            <form class="flex items-center justify-center" action="/invoices/{{invoice_data.id}}?paid=True" method="POST">
-                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Mark as Paid
-                </button>
-            </form>
-            {% else %}
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <!-- Heroicon name: solid/check-circle -->
-                    <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                    </svg>
+                {% if not invoice_data.is_paid %}
+                <form class="flex items-center justify-center" action="/invoices/{{invoice_data.id}}?paid=True" method="POST">
+                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Mark as Paid
+                    </button>
+                </form>
+                {% else %}
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <!-- Heroicon name: solid/check-circle -->
+                        <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-2">
+                        <h3 class="text-sm font-medium text-green-800">Invoice Paid</h3>
+                    </div>
                 </div>
-                <div class="ml-2">
-                    <h3 class="text-sm font-medium text-green-800">Invoice Paid</h3>
+                {% endif %}
+            </div>
+
+            <div class="grid grid-cols-4 gap-5 mt-6">
+                <div class="flex flex-col">
+                    <span class="text-sm font-medium text-gray-500">Due Date</span>
+                    <span class="mt-1 text-sm text-gray-900">{{invoice_data.american_due_date}}</span>
+                </div>
+
+                <div class="flex flex-col">
+                    <span class="text-sm font-medium text-gray-500">Vendor Name</span>
+                    <span class="mt-1 text-sm text-gray-900">{{invoice_data.vendor_name}}</span>
+                </div>
+
+                <div class="flex flex-col">
+                    <span class="text-sm font-medium text-gray-500">Amount Due</span>
+                    <span class="mt-1 text-sm text-gray-900">{{invoice_data.currency}}{{invoice_data.amount_due}}</span>
+                </div>
+
+                <div class="flex flex-col">
+                    <span class="text-sm font-medium text-gray-500">Invoice No.</span>
+                    <span class="mt-1 text-sm text-gray-900">{{invoice_data.invoice_id}}</span>
                 </div>
             </div>
+
+            <div class="mt-5">
+                {{ add_category_form(invoice_data) }}
+            </div>
+        </section>
+
+        <div class="p-6 w-full mx-auto flex justify-center items-center">
+            {% if not invoice_data.invoice_id%}
+            <p class="text-center">Image Not Found.</p>
             {% endif %}
+            <img class="" src={{invoice_data.image_uri}} alt="Invoice {{invoice_data.invoice_id}}">
         </div>
 
-        <div class="flex items-start mt-6">
-            <div class="flex flex-col mr-10">
-                <span class="text-sm font-medium text-gray-500">Due Date</span>
-                <span class="mt-1 text-sm text-gray-900">{{invoice_data.american_due_date}}</span>
-            </div>
-
-            <div class="flex flex-col mr-10">
-                <span class="text-sm font-medium text-gray-500">Vendor Name</span>
-                <span class="mt-1 text-sm text-gray-900">{{invoice_data.vendor_name}}</span>
-            </div>
-
-            <div class="flex flex-col">
-                <span class="text-sm font-medium text-gray-500">Invoice No.</span>
-                <span class="mt-1 text-sm text-gray-900">{{invoice_data.invoice_id}}</span>
-            </div>
-        </div>
-
-        <div class="mt-5">
-            
-            {{ add_category_form(invoice_data) }}
-        </div>
     </div>
-
-    <div class="p-6">
-        {% if not invoice_data.invoice_id%}
-        <p class="text-center">Image Not Found.</p>
-        {% endif %}
-        <img src={{invoice_data.image_uri}} alt="Invoice {{invoice_data.invoice_id}}">
-    </div>
-
 </div>
 
 {% endmacro %}

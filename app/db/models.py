@@ -58,6 +58,8 @@ class Vendor(Base):
     __tablename__ = "vendors"
 
     id = Column(String, default=ulid.ulid, primary_key=True)
+    user_id = Column(String, ForeignKey("users.id"), nullable=True, index=True)
+    organization_id = Column(String, ForeignKey("organizations.id"), nullable=True, index=True)
     invoices = relationship("Invoice")
 
     name = Column(String)
