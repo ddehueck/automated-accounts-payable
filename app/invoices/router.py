@@ -18,9 +18,10 @@ from app.db.session import SessionLocal
 from app.frontend.templates import template_response
 from app.invoices.ocr.textract import InvoiceImageProcessor, textract_client
 
-from .db_utils import (add_category_to_invoice, get_invoice_by_id,
-                       get_invoices_by_user, remove_category_from_invoice,
-                       save_invoice, update_paid_status_invoice, delete_invoice)
+from .db_utils import (add_category_to_invoice, delete_invoice,
+                       get_invoice_by_id, get_invoices_by_user,
+                       remove_category_from_invoice, save_invoice,
+                       update_paid_status_invoice)
 from .models import CreateInvoice, PublicInvoice
 from .s3_utils import upload_image_obj
 
@@ -44,6 +45,7 @@ async def get_home(
         )
         invoices = {i.id: PublicInvoice.from_orm(i).dict() for i in invoices}
     return template_response("./invoices/inbox.html", {"request": request, "invoices": invoices})
+
 
 @router.get("/invoice-list", response_class=HTMLResponse)
 async def get_home(
@@ -115,10 +117,13 @@ async def post_upload_invoice(file: UploadFile = File(...), user_id: str = Depen
 
     return RedirectResponse(f"/invoices/{db_invoice.id}", status_code=HTTP_302_FOUND)
 
+
 # API routes - no redirects - pure actions
+
 
 class AddCategoryBody(BaseModel):
     category_name: str
+
 
 @router.put("/invoices/{invoice_id}/categories")
 async def put_single_invoice(invoice_id: str, body: AddCategoryBody, user_id: str = Depends(requires_authentication)):
@@ -134,6 +139,7 @@ async def put_single_invoice(invoice_id: str, category_name: str, user_id: str =
     with SessionLocal() as db:
         remove_category_from_invoice(db, user_id, invoice_id, category_name)
     return Response(status_code=200)
+
 
 @router.delete("/invoices/{invoice_id}")
 async def delete_single_invoice(invoice_id: str, user_id: str = Depends(requires_authentication)):

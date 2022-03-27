@@ -185,7 +185,6 @@ def remove_category_from_invoice(db: sa.orm.Session, user_id: str, invoice_id: s
     db.commit()
 
 
-
 def delete_invoice(db: sa.orm.Session, invoice_id: str) -> None:
     # Delete category links
     db.query(CategoryInvoiceAssociation).filter_by(invoice_id=invoice_id).delete()

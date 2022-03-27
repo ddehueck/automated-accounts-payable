@@ -8,6 +8,13 @@
 {% block content %}
 <main class="flex-1">
     <div class="max-w-4xl mx-auto my-5 p-10">
+
+        {% if request.query_params.get('message') %}
+        <div class="rounded-md bg-blue-50 p-4 mb-5 ">
+            <p class="text-sm text-blue-700">{{request.query_params.get('message')}}</p>
+          </div>
+        {% endif %}
+
         <header>
             <h2 class="text-xl leading-6 font-bold text-gray-900">Account Settings</h2>
             <p class="mt-1 max-w-2xl text-sm text-gray-500">Your account information and corresponding settings.</p>

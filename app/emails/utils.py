@@ -1,7 +1,6 @@
-
 from loguru import logger as log
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail, To, From, ReplyTo, Category
+from sendgrid.helpers.mail import Category, From, Mail, ReplyTo, To
 
 from .config import config
 
@@ -19,10 +18,8 @@ def send_reset_pswd_email(email: str, reset_url: str) -> None:
         name="Easy Invoice Management",
     )
 
-    message.template_id = "d-f157bdbf39784edfb1d6a2aae88c80e4"
-    message.dynamic_template_data = {
-        "reset_url": reset_url
-    }
+    message.template_id = "d-af503290faba4084bf74c2e64832ea35"
+    message.dynamic_template_data = {"reset_url": reset_url}
 
     message.category = [
         Category("reset_password"),

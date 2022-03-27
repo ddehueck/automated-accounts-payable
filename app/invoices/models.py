@@ -47,7 +47,7 @@ class PublicInvoice(BaseModel):
     id: str
     is_paid: bool = None
     vendor_name: str = None
-    amount_due: Decimal = None
+    amount_due: Union[str, Decimal] = None
     currency: str = None
     due_date: datetime = None
     invoice_id: str = None
@@ -68,7 +68,11 @@ class PublicInvoice(BaseModel):
     def make_date_american(cls, v: datetime) -> str:
         if not isinstance(v, datetime):
             raise ValueError("Must pass datetime for humanized date")
-        return humanize.naturaldate(v)
+        return v.strftime("%B %-d, %Y")
+
+    @validator("amount_due")
+    def enforce_two_decimal_places(cls, v: Decimal) -> str:
+        return f"{Decimal(v):.2f}"
 
     @classmethod
     def from_orm(cls, db_invoice: Invoice) -> "PublicInvoice":
@@ -77,7 +81,7 @@ class PublicInvoice(BaseModel):
             categories=categories,
             humanized_due_date=db_invoice.due_date,
             american_due_date=db_invoice.due_date,
-            **db_invoice.__dict__
+            **db_invoice.__dict__,
         )
 
 

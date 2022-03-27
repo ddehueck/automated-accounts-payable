@@ -14,10 +14,10 @@ from .db_utils import get_vendors_by_user
 
 router = APIRouter()
 
+
 @router.get("/vendors", response_class=HTMLResponse)
 async def get_dashboard(request: Request, user_id: str = Depends(requires_authentication)):
     with SessionLocal() as db:
         vendors = get_vendors_by_user(db, user_id)
 
     return template_response("./vendors/vendors.html", {"request": request, "vendors": jsonable_encoder(vendors)})
-
