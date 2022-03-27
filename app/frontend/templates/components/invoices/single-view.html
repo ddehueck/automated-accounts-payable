@@ -1,4 +1,5 @@
 {% macro single_invoice_view(invoice_data) %}
+{% from "components/invoices/add-category.html" import add_category_form %}
 
 <div x-data class="rounded-lg border-2 border-gray-200 w-full">
 
@@ -35,7 +36,7 @@
         <div class="flex items-start mt-6">
             <div class="flex flex-col mr-10">
                 <span class="text-sm font-medium text-gray-500">Due Date</span>
-                <span class="mt-1 text-sm text-gray-900">{{invoice_data.due_date}}</span>
+                <span class="mt-1 text-sm text-gray-900">{{invoice_data.american_due_date}}</span>
             </div>
 
             <div class="flex flex-col mr-10">
@@ -47,6 +48,11 @@
                 <span class="text-sm font-medium text-gray-500">Invoice No.</span>
                 <span class="mt-1 text-sm text-gray-900">{{invoice_data.invoice_id}}</span>
             </div>
+        </div>
+
+        <div class="mt-5">
+            
+            {{ add_category_form(invoice_data) }}
         </div>
     </div>
 

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
-from typing import Union
+from typing import List, Union
 
 import humanize
 from pydantic import BaseModel, validator
@@ -53,6 +53,8 @@ class PublicInvoice(BaseModel):
     invoice_id: str = None
     image_uri: str = None
     humanized_due_date: Union[str, datetime] = None
+    american_due_date: Union[str, datetime] = None
+    categories: List[str] = []
 
     @validator("humanized_due_date")
     def humanize_datetime(cls, v: datetime) -> str:
@@ -62,9 +64,21 @@ class PublicInvoice(BaseModel):
         delta: timedelta = current_time - v
         return humanize.naturaltime(delta)
 
+    @validator("american_due_date")
+    def make_date_american(cls, v: datetime) -> str:
+        if not isinstance(v, datetime):
+            raise ValueError("Must pass datetime for humanized date")
+        return humanize.naturaldate(v)
+
     @classmethod
     def from_orm(cls, db_invoice: Invoice) -> "PublicInvoice":
-        return cls(humanized_due_date=db_invoice.due_date, **db_invoice.__dict__)
+        categories = [c.category.name for c in db_invoice.category_links]
+        return cls(
+            categories=categories,
+            humanized_due_date=db_invoice.due_date,
+            american_due_date=db_invoice.due_date,
+            **db_invoice.__dict__
+        )
 
 
 class CategoryEnum(str, Enum):
@@ -74,7 +88,7 @@ class CategoryEnum(str, Enum):
     travel = "travel"
     equipment = "equipment"
     internet = "internet"
-    hosting	= "hosting"
+    hosting = "hosting"
     furniture = "furniture"
     office_supplies = "office_supplies"
     vehicles = "vehicles"

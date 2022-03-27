@@ -75,6 +75,7 @@ class Invoice(Base):
     user_id = Column(String, ForeignKey("users.id"), nullable=True, index=True)
     organization_id = Column(String, ForeignKey("organizations.id"), nullable=True, index=True)
     vendor_id = Column(String, ForeignKey("vendors.id"), nullable=True, index=True)
+    content_hash = Column(String)
 
     is_paid = Column(Boolean, default=False)
     vendor_name = Column(String)
@@ -88,5 +89,32 @@ class Invoice(Base):
     raw_amount_due = Column(String)
     raw_due_date = Column(String)
 
+    category_links = relationship("CategoryInvoiceAssociation", back_populates="invoice")
+
     created_on = Column(DateTime, server_default=func.now())
     updated_on = Column(DateTime, onupdate=func.now())
+
+
+class Category(Base):
+    __tablename__ = "categories"
+
+    id = Column(String, default=ulid.ulid, primary_key=True)
+    user_id = Column(String, ForeignKey("users.id"), nullable=True, index=True)
+    organization_id = Column(String, ForeignKey("organizations.id"), nullable=True, index=True)
+
+    name = Column(String, unique=True)
+
+    invoice_links = relationship("CategoryInvoiceAssociation", back_populates="category")
+
+    created_on = Column(DateTime, server_default=func.now())
+    updated_on = Column(DateTime, onupdate=func.now())
+
+
+class CategoryInvoiceAssociation(Base):
+    __tablename__ = "category_invoice_associations"
+
+    category_id = Column(ForeignKey("categories.id"), primary_key=True)
+    invoice_id = Column(ForeignKey("invoices.id"), primary_key=True)
+
+    category = relationship("Category", back_populates="invoice_links")
+    invoice = relationship("Invoice", back_populates="category_links")

@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta
 import imp
+from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, Form, Request
@@ -28,7 +28,9 @@ router = APIRouter()
 
 # TODO: Proper redirects
 @router.post("/register", response_class=RedirectResponse)
-async def post_register(request: Request, name: str = Form(...), email: str = Form(...), password: str = Form(..., min_length=6)):
+async def post_register(
+    request: Request, name: str = Form(...), email: str = Form(...), password: str = Form(..., min_length=6)
+):
     with SessionLocal() as db:
         existing_user = db.query(db_models.User).filter_by(email=email).first()
         if existing_user:

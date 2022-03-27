@@ -1,12 +1,14 @@
+import re
 from datetime import datetime
 from typing import List, Optional
+from unicodedata import name
 
 import sqlalchemy as sa
 from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
-from app.db.models import Invoice
+from app.db.models import Category, CategoryInvoiceAssociation, Invoice
 
 from .models import CreateInvoice
 
@@ -72,12 +74,91 @@ def update_paid_status_invoice(db: Session, invoice_id: str, is_paid: bool) -> I
 
 
 def get_num_due_soon(db: sa.orm.Session, user_id: str) -> int:
-    return db.query(func.count(Invoice.id)).filter_by(user_id=user_id, is_paid=False).filter(Invoice.due_date > datetime.utcnow()).scalar() or 0
+    return (
+        db.query(func.count(Invoice.id))
+        .filter_by(user_id=user_id, is_paid=False)
+        .filter(Invoice.due_date > datetime.utcnow())
+        .scalar()
+        or 0
+    )
 
 
 def get_num_overdue(db: sa.orm.Session, user_id: str) -> int:
-    return db.query(func.count(Invoice.id)).filter_by(user_id=user_id, is_paid=False).filter(Invoice.due_date < datetime.utcnow()).scalar() or 0
+    return (
+        db.query(func.count(Invoice.id))
+        .filter_by(user_id=user_id, is_paid=False)
+        .filter(Invoice.due_date < datetime.utcnow())
+        .scalar()
+        or 0
+    )
 
-    
+
 def get_num_paid(db: sa.orm.Session, user_id: str) -> int:
     return db.query(func.count(Invoice.id)).filter_by(user_id=user_id, is_paid=True).scalar() or 0
+
+
+def get_invoice_links_by_category_name(db: sa.orm.Session, name: str, user_id: str) -> List[CategoryInvoiceAssociation]:
+    category = db.query(Category).filter_by(name=name, user_id=user_id).first()
+    if not category:
+        return []
+    return category.invoice_links
+
+
+def get_category_by_name(db: sa.orm.Session, name: str, user_id: str) -> Optional[Category]:
+    return db.query(Category).filter_by(user_id=user_id, name=name).first()
+
+
+# TODO: Gotta do these upserts right
+# TODO: user_id should translate to organization id
+def ensure_category_by_name(db: sa.orm.Session, name: str, user_id: str) -> Category:
+    existing = db.query(Category).filter_by(name=name, user_id=user_id).first()
+    if existing:
+        return existing
+
+    new = Category(
+        name=name,
+        user_id=user_id,
+    )
+
+    db.add(new)
+    db.commit()
+    db.refresh(new)
+    return new
+
+
+def get_category_link_by_invoice_id_and_name(
+    db: sa.orm.Session, user_id: str, invoice_id: str, category_name: str
+) -> Optional[CategoryInvoiceAssociation]:
+    return (
+        db.query(CategoryInvoiceAssociation)
+        .join(Category, CategoryInvoiceAssociation.category_id == Category.id)
+        .filter(CategoryInvoiceAssociation.invoice_id == invoice_id)
+        .filter(Category.name == category_name)
+        .first()
+    )
+
+
+def add_category_to_invoice(
+    db: sa.orm.Session, user_id: str, invoice_id: str, category_name: str
+) -> CategoryInvoiceAssociation:
+    existing_link = get_category_link_by_invoice_id_and_name(db, user_id, invoice_id, category_name)
+    if existing_link:
+        return existing_link
+
+    category = ensure_category_by_name(db, category_name, user_id)
+    new_link = CategoryInvoiceAssociation(invoice_id=invoice_id, category_id=category.id)
+
+    db.add(new_link)
+    db.commit()
+    db.refresh(new_link)
+    return new_link
+
+
+def remove_category_from_invoice(db: sa.orm.Session, user_id: str, invoice_id: str, category_name: str) -> None:
+    # TODO: remove from category table if no associations?
+    existing_link = get_category_link_by_invoice_id_and_name(db, user_id, invoice_id, category_name)
+    if not existing_link:
+        return existing_link
+
+    db.delete(existing_link)
+    db.commit()

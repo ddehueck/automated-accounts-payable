@@ -1,0 +1,25 @@
+{% extends "components/sidebar-base.html" %}
+{% from "components/invoices/card.html" import invoice_card %}
+{% from "components/invoices/single-view.html" import single_invoice_view %}
+{% from "components/invoices/upload-section.html" import invoice_upload_section %}
+{% from "components/invoices/query-menu.html" import query_menu %}
+
+{% block head %}
+<title>Inbox | Easy Invoice Management</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<main class="flex w-full">
+    <div class="w-full h-screen overflow-scroll p-8 bg-gray-50 border-r-2 border-gray-200">
+        <h2 class="font-extrabold text-3xl mb-5">Inbox</h2>
+        {{ query_menu() }}
+
+        {% for id, data in invoices.items() %}
+        <div class="mt-5">
+            {{ invoice_card(data) }}
+        </div>
+        {% endfor %}
+    </div>
+</main>
+{% endblock %}

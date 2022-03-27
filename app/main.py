@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, APIRouter
+from fastapi import APIRouter, Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -32,14 +32,17 @@ app.include_router(users_router)
 
 global_router = APIRouter()
 
+
 @global_router.get("/health")
 def get_health():
     return True
+
 
 @global_router.get("/", response_class=RedirectResponse)
 def get_index(user_id: str = Depends(optional_authentication)):
     if user_id:
         return RedirectResponse("/home", status_code=HTTP_302_FOUND)
     return RedirectResponse("/landing", status_code=HTTP_302_FOUND)
+
 
 app.include_router(global_router)

@@ -10,7 +10,7 @@ if config.DATABASE_URL is None:
     )
 else:
     SQLALCHEMY_DATABASE_URI = config.DATABASE_URL
-    
+
 print(SQLALCHEMY_DATABASE_URI)
 
 engine = create_engine(SQLALCHEMY_DATABASE_URI)
