@@ -39,7 +39,7 @@ def save_invoice(db: Session, invoice: CreateInvoice) -> Invoice:
     db_vendor = ensure_vendor_by_name(db, db_invoice.vendor_name, invoice.user_id)
 
     db_invoice.vendor_id = db_vendor.id
-    
+
     db.add(db_invoice)
     db.commit()
     db.refresh(db_invoice)
@@ -184,3 +184,11 @@ def remove_category_from_invoice(db: sa.orm.Session, user_id: str, invoice_id: s
     db.delete(existing_link)
     db.commit()
 
+
+
+def delete_invoice(db: sa.orm.Session, invoice_id: str) -> None:
+    # Delete category links
+    db.query(CategoryInvoiceAssociation).filter_by(invoice_id=invoice_id).delete()
+    # Delete invoice
+    db.query(Invoice).filter_by(id=invoice_id).delete()
+    db.commit()

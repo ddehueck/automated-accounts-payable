@@ -13,6 +13,7 @@ from .invoices.router import router as invoices_router
 from .marketing.router import router as marketing_router
 from .payments.router import router as payments_router
 from .users.router import router as users_router
+from .vendors.router import router as vendors_router
 
 if global_config.in_deployment:
     app = FastAPI(docs_url=None)
@@ -29,6 +30,7 @@ app.include_router(invoices_router)
 app.include_router(marketing_router)
 app.include_router(payments_router)
 app.include_router(users_router)
+app.include_router(vendors_router)
 
 global_router = APIRouter()
 
@@ -41,7 +43,7 @@ def get_health():
 @global_router.get("/", response_class=RedirectResponse)
 def get_index(user_id: str = Depends(optional_authentication)):
     if user_id:
-        return RedirectResponse("/home", status_code=HTTP_302_FOUND)
+        return RedirectResponse("/inbox", status_code=HTTP_302_FOUND)
     return RedirectResponse("/landing", status_code=HTTP_302_FOUND)
 
 

@@ -24,6 +24,7 @@ PyMuPDF = "^1.19.5"
 isort = "^5.10.1"
 humanize = "^4.0.0"
 stripe = "^2.67.0"
+sendgrid = "^6.9.7"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

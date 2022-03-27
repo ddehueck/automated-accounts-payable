@@ -20,7 +20,7 @@ from app.invoices.ocr.textract import InvoiceImageProcessor, textract_client
 
 from .db_utils import (add_category_to_invoice, get_invoice_by_id,
                        get_invoices_by_user, remove_category_from_invoice,
-                       save_invoice, update_paid_status_invoice)
+                       save_invoice, update_paid_status_invoice, delete_invoice)
 from .models import CreateInvoice, PublicInvoice
 from .s3_utils import upload_image_obj
 
@@ -45,11 +45,30 @@ async def get_home(
         invoices = {i.id: PublicInvoice.from_orm(i).dict() for i in invoices}
     return template_response("./invoices/inbox.html", {"request": request, "invoices": invoices})
 
+@router.get("/invoice-list", response_class=HTMLResponse)
+async def get_home(
+    request: Request,
+    user_id: str = Depends(requires_authentication),
+    filter_by: str = None,
+    order_by: str = "due_date",
+    desc: bool = True,
+    limit: int = 100,
+    offset: int = 0,
+):
+    with SessionLocal() as db:
+        invoices = get_invoices_by_user(
+            db, user_id, filter_by=filter_by, order_by=order_by, limit=limit, offset=offset, desc=desc
+        )
+        invoices = {i.id: PublicInvoice.from_orm(i).dict() for i in invoices}
+    return template_response("./invoices/invoice-list.html", {"request": request, "invoices": invoices})
+
 
 @router.get("/invoices/{invoice_id}")
 async def get_single_invoice(request: Request, invoice_id: str, user_id: str = Depends(requires_authentication)):
     with SessionLocal() as db:
         invoice = get_invoice_by_id(db, invoice_id)
+        if not invoice:
+            return Response("404 Invoice not Found", status_code=404)
         invoice = PublicInvoice.from_orm(invoice)
     return template_response("./invoices/single-invoice.html", {"request": request, "data": jsonable_encoder(invoice)})
 
@@ -58,7 +77,7 @@ async def get_single_invoice(request: Request, invoice_id: str, user_id: str = D
 async def post_single_invoice(invoice_id: str, paid: bool, user_id: str = Depends(requires_authentication)):
     with SessionLocal() as db:
         update_paid_status_invoice(db, invoice_id, is_paid=paid)
-    return RedirectResponse(f"/home#{invoice_id}", status_code=HTTP_302_FOUND)
+    return RedirectResponse(f"/invoices/{invoice_id}", status_code=HTTP_302_FOUND)
 
 
 @router.get("/upload-invoice", response_class=HTMLResponse)
@@ -114,4 +133,10 @@ async def put_single_invoice(invoice_id: str, category_name: str, user_id: str =
     # Add categories
     with SessionLocal() as db:
         remove_category_from_invoice(db, user_id, invoice_id, category_name)
+    return Response(status_code=200)
+
+@router.delete("/invoices/{invoice_id}")
+async def delete_single_invoice(invoice_id: str, user_id: str = Depends(requires_authentication)):
+    with SessionLocal() as db:
+        delete_invoice(db, invoice_id)
     return Response(status_code=200)
