@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 from typing import List, Union
+from loguru import logger as log
 
 import humanize
 from pydantic import BaseModel, validator
@@ -81,7 +82,8 @@ class PublicInvoice(BaseModel):
     @validator("humanized_due_date")
     def humanize_datetime(cls, v: datetime) -> str:
         if not isinstance(v, datetime):
-            raise ValueError("Must pass datetime for humanized date")
+            log.debug(f"Tried to parse {v}, {type(v)} as a humanized date.")
+            return "unknown"
         current_time = datetime.utcnow()
         delta: timedelta = current_time - v
         return humanize.naturaltime(delta)
