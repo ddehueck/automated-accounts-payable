@@ -15,11 +15,15 @@ class InvoiceStatusEnum(str, Enum):
     due = "due"
     overdue = "overdue"
     paid = "paid"
+    unknown = "unknown"
 
     @classmethod
     def get_status(cls, is_paid: bool, due_date: datetime = None) -> "InvoiceStatusEnum":
         if is_paid:
             return cls.paid
+
+        if not due_date:
+            return cls.unknown
 
         if datetime.utcnow() > due_date:
             return cls.overdue
