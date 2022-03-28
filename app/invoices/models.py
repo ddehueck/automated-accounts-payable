@@ -96,6 +96,7 @@ class PublicInvoice(BaseModel):
     def from_orm(cls, db_invoice: Invoice) -> "PublicInvoice":
         categories = [c.category.name for c in db_invoice.category_links]
         status_enum = InvoiceStatusEnum.get_status(db_invoice.is_paid, db_invoice.due_date)
+        
         return cls(
             categories=categories,
             humanized_due_date=db_invoice.due_date,

@@ -33,7 +33,7 @@ class InvoiceImageProcessor:
 
         invoice_body = self._parse_texract_summary_fields(summary_fields)
         if not invoice_body.is_complete_parse():
-            log.warning(f"Not a complete parse: {invoice_body.dict()}")
+            log.warning(f"Not a complete parse: \n{invoice_body.dict()}\n \n{res}")
 
         return Ok(invoice_body)
 
