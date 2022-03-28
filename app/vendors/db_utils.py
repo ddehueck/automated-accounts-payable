@@ -41,7 +41,7 @@ def update_vendor_contact_email(db: sa.orm.Session, vendor_id: str, email: str) 
     vendor = get_vendor_by_id(db, vendor_id)
     if not vendor:
         return None
-    
+
     vendor.contact_email = email
     db.commit()
     db.refresh(vendor)

@@ -1,0 +1,18 @@
+{% macro horizontal_nav() %}
+<nav aria-label="horizontal navbar" class="flex items-center justify-between border-b border-zinc-200 px-10 py-2">
+
+    <!-- Left -->
+    <div>
+        <div class="text-sm text-slate-800 p-3 rounded hover:underline hover:gb-slate-50">
+          <a href="#">My Bank Balance</a>
+        </div>
+    </div>
+    
+    <!-- Right -->
+    <div>
+        <div class="text-sm text-slate-800 p-3 rounded hover:underline hover:gb-slate-50">
+          <a href="/logout">Sign Out</a>
+        </div>
+    </div>
+</nav>
+{% endmacro %}

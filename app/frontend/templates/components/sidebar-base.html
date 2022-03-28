@@ -1,10 +1,16 @@
 {% from "components/global/standard-sidebar.html" import sidebar %}
+{% from "components/global/horizontal-nav.html" import horizontal_nav %}
 
 <html lang="en">
   <head>
     {% block head %} {% include 'global-head.html' %} {% endblock %}
   </head>
   <body class="flex">
-    {{ sidebar() }} {% block content %} {% endblock %}
+    {{ sidebar() }} 
+    <div class="w-full">
+      {{ horizontal_nav() }}
+      {% block content %} 
+      {% endblock %}
+    </div>
   </body>
 </html>

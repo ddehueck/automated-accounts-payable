@@ -2078,6 +2078,10 @@ select {
   border-right-width: 1px;
 }
 
+.border-b {
+  border-bottom-width: 1px;
+}
+
 .border-dashed {
   border-style: dashed;
 }
@@ -2129,6 +2133,11 @@ select {
 .border-zinc-200 {
   --tw-border-opacity: 1;
   border-color: rgb(228 228 231 / var(--tw-border-opacity));
+}
+
+.border-slate-100 {
+  --tw-border-opacity: 1;
+  border-color: rgb(241 245 249 / var(--tw-border-opacity));
 }
 
 .bg-gray-800 {
