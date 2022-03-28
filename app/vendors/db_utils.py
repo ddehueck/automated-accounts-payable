@@ -35,3 +35,14 @@ def get_invoice_last_added_on_by_vendor(db: sa.orm.Session, vendor_id: str) -> O
     if not res:
         return None
     return res.created_on
+
+
+def update_vendor_contact_email(db: sa.orm.Session, vendor_id: str, email: str) -> Optional[db_models.Vendor]:
+    vendor = get_vendor_by_id(db, vendor_id)
+    if not vendor:
+        return None
+    
+    vendor.contact_email = email
+    db.commit()
+    db.refresh(vendor)
+    return vendor

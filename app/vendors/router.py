@@ -12,7 +12,7 @@ from app.frontend.templates import template_response
 from app.invoices.db_utils import query_invoices
 from app.invoices.models import PublicInvoice
 
-from .db_utils import get_vendor_by_id, get_vendors_by_user
+from .db_utils import get_vendor_by_id, get_vendors_by_user, update_vendor_contact_email
 from .models import PublicVendorView
 
 router = APIRouter()
@@ -41,3 +41,16 @@ async def get_single_vendor(request: Request, vendor_id: str, user_id: str = Dep
         "./vendors/single-vendor.html",
         {"request": request, "vendor": jsonable_encoder(vendor), "invoices": jsonable_encoder(invoices)},
     )
+
+
+# API ROUTES
+
+
+class VendorUpdateBody(BaseModel):
+    contact_email: str
+
+@router.put("/vendors/{vendor_id}")
+async def update_vendor(vendor_id: str, body: VendorUpdateBody, user_id: str = Depends(requires_authentication)):
+    with SessionLocal() as db:
+        update_vendor_contact_email(db, vendor_id, body.contact_email)
+    return Response(status_code=200)

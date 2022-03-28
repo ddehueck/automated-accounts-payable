@@ -27,7 +27,7 @@ class PublicVendorView(BaseModel):
 
     last_added_on: Optional[str] = None
     created_on: str
-    updated_on: datetime = None
+    updated_on: str = None
 
     @classmethod
     def load(cls, db: sa.orm.Session, vendor: Vendor) -> "PublicVendorView":

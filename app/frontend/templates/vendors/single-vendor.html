@@ -1,5 +1,6 @@
 {% extends "components/sidebar-base.html" %}
 {% from "components/invoices/invoice-table.html" import invoice_table %}
+{% from "components/vendors/updatable-contact-email.html" import updatable_contact_email %}
 
 {% block head %}
 <title>{{vendor.name}} | Easy Invoice Management</title>
@@ -24,8 +25,7 @@
                         <dd class="mt-1 text-sm text-gray-900">{{vendor.last_added_on}}</dd>
                     </div>
                     <div class="sm:col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Contact Email</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{vendor.contact_email}}</dd>
+                        {{updatable_contact_email(vendor)}}
                     </div>
                 </dl>
 
