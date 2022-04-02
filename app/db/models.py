@@ -120,3 +120,6 @@ class CategoryInvoiceAssociation(Base):
 
     category = relationship("Category", back_populates="invoice_links")
     invoice = relationship("Invoice", back_populates="category_links")
+
+    # created_on = Column(DateTime, server_default=func.now())
+    # updated_on = Column(DateTime, onupdate=func.now())

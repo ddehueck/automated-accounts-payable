@@ -11,7 +11,11 @@ class RawInvoiceBody(BaseModel):
     total_due: str = Field(None, alias="TOTAL")
     invoice_number: str = Field(None, alias="INVOICE_RECEIPT_ID")
     due_date: str = Field(None, alias="DUE_DATE")
-    ambiguous_date: str = Field(None, alias="INVOICE_RECEIPT_DATE", description="Field that will capture a date. Fallback for when due date is not found.")
+    ambiguous_date: str = Field(
+        None,
+        alias="INVOICE_RECEIPT_DATE",
+        description="Field that will capture a date. Fallback for when due date is not found.",
+    )
     vendor_name: str = Field(None, alias="VENDOR_NAME")
 
     def is_complete_parse(self) -> bool:

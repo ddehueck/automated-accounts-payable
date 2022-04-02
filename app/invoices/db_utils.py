@@ -91,11 +91,15 @@ def query_invoices(
         # TODO Add enumerations
         pass
 
-    order_by_stmt = getattr(Invoice, order_by)
+    try:
+        order_by_stmt = getattr(Invoice, order_by)
+    except AttributeError as e:
+        return []
+
     if desc:
         order_by_stmt = sa.desc(order_by_stmt)
-    invoices_query.order_by(order_by_stmt)
 
+    invoices_query = invoices_query.order_by(order_by_stmt)
     invoices_query = invoices_query.limit(limit).offset(offset)
     return invoices_query.all()
 
@@ -160,7 +164,7 @@ def get_category_by_name(db: sa.orm.Session, name: str, user_id: str) -> Optiona
 
 # TODO: Gotta do these upserts right
 # TODO: user_id should translate to organization id
-def ensure_category_by_name(db: sa.orm.Session, name: str, user_id: str) -> Category:
+def ensure_category_by_name(db: sa.orm.Session, name: str, user_id: str, commit: bool = True) -> Category:
     name = name.strip()
 
     existing = db.query(Category).filter_by(name=name, user_id=user_id).first()
@@ -173,7 +177,12 @@ def ensure_category_by_name(db: sa.orm.Session, name: str, user_id: str) -> Cate
     )
 
     db.add(new)
-    db.commit()
+
+    if commit:
+        db.commit()
+    else:
+        db.flush()
+
     db.refresh(new)
     return new
 
@@ -197,7 +206,10 @@ def add_category_to_invoice(
     if existing_link:
         return existing_link
 
-    category = ensure_category_by_name(db, category_name, user_id)
+    # Remove existing links to ensure only one category
+    db.query(CategoryInvoiceAssociation).filter_by(invoice_id=invoice_id).delete()
+
+    category = ensure_category_by_name(db, category_name, user_id, commit=False)
     new_link = CategoryInvoiceAssociation(invoice_id=invoice_id, category_id=category.id)
 
     db.add(new_link)

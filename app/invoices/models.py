@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 from typing import List, Union
-from loguru import logger as log
 
 import humanize
+from loguru import logger as log
 from pydantic import BaseModel, validator
 
 from app.db.models import Invoice
@@ -77,7 +77,7 @@ class PublicInvoice(BaseModel):
     image_uri: str = None
     humanized_due_date: Union[str, datetime] = None
     american_due_date: Union[str, datetime] = None
-    categories: List[str] = []
+    category: str = None
 
     @validator("humanized_due_date")
     def humanize_datetime(cls, v: datetime) -> str:
@@ -94,11 +94,11 @@ class PublicInvoice(BaseModel):
 
     @classmethod
     def from_orm(cls, db_invoice: Invoice) -> "PublicInvoice":
-        categories = [c.category.name for c in db_invoice.category_links]
+        category = db_invoice.category_links[0].category.name if db_invoice.category_links else None
         status_enum = InvoiceStatusEnum.get_status(db_invoice.is_paid, db_invoice.due_date)
-        
+
         return cls(
-            categories=categories,
+            category=category,
             humanized_due_date=db_invoice.due_date,
             american_due_date=format_date_american(db_invoice.due_date),
             status=status_enum.value,

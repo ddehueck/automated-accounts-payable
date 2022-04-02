@@ -1,6 +1,6 @@
 {% macro updatable_contact_email(vendor) %}
 <div x-data="{
-        emailInput: '{{vendor.contact_email if vendor.contact_email}}',
+        emailInput: '{{vendor.contact_email|default('', True)}}',
         showForm: false || (this.emailInput == ''),
         addEmail() {
             if (this.emailInput === '') return

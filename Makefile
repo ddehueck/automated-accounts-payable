@@ -1,6 +1,6 @@
 PHONY: install
 install:
-	poetry install --
+	poetry install .
 
 PHONY: format
 format:
