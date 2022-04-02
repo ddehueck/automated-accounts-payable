@@ -1,5 +1,5 @@
-from email.mime import image
-from urllib import request
+from datetime import datetime, timedelta
+from typing import List
 
 import fitz
 import ulid
@@ -19,7 +19,7 @@ from app.frontend.templates import template_response
 from app.invoices.ocr.textract import InvoiceImageProcessor, textract_client
 
 from .db_utils import (add_category_to_invoice, delete_invoice,
-                       get_invoice_by_id, get_invoices_by_user,
+                       get_invoice_by_id, get_invoices_by_user, query_invoices,
                        remove_category_from_invoice, save_invoice,
                        update_paid_status_invoice)
 from .models import CreateInvoice, PublicInvoice
@@ -115,6 +115,75 @@ async def post_upload_invoice(file: UploadFile = File(...), user_id: str = Depen
         db_invoice = save_invoice(db, formatted_invoice)
 
     return RedirectResponse(f"/invoices/{db_invoice.id}", status_code=HTTP_302_FOUND)
+
+
+class CalendarDay(BaseModel):
+    year: int
+    month: int
+    day: int
+    active: bool
+    invoices_due: List[PublicInvoice] = []
+
+
+import calendar
+
+from dateutil.relativedelta import relativedelta
+
+
+@router.get("/calendar", response_class=HTMLResponse)
+async def get_register(
+    request: Request,
+    year: int = None,
+    month: int = None,
+    next: bool = False,
+    previous: bool = False,
+    user_id: str = Depends(requires_authentication),
+):
+    # Validate combindations
+    if next and previous:
+        raise HTTPException(400, "Can't specify previous and next.")
+
+    # Build datetime from query params or default to now
+    if not (month and year):
+        month = datetime.utcnow().month
+        year = datetime.utcnow().year
+    current_dt = datetime(year, month, 1)
+
+    # Make adjustments if indicated
+    if next:
+        current_dt = current_dt + relativedelta(months=1)
+    if previous:
+        current_dt = current_dt - relativedelta(months=1)
+
+    # Ensure theser are up to date after any adjustments
+    month, year = current_dt.month, current_dt.year
+
+    with SessionLocal() as db:
+        calendar_days = []
+        calendar_view = calendar.Calendar(firstweekday=6)
+
+        for date in calendar_view.itermonthdates(year, month):
+            due_this_date = query_invoices(db, due_date=date, user_id=user_id)
+            calendar_days.append(
+                CalendarDay(
+                    year=date.year,
+                    month=date.month,
+                    day=date.day,
+                    active=month == date.month,
+                    invoices_due=[PublicInvoice.from_orm(i) for i in due_this_date],
+                )
+            )
+
+    return template_response(
+        "./invoices/calendar.html",
+        {
+            "request": request,
+            "date_string": current_dt.strftime("%B %Y"),
+            "month": month,
+            "year": year,
+            "days": jsonable_encoder(calendar_days),
+        },
+    )
 
 
 # API routes - no redirects - pure actions

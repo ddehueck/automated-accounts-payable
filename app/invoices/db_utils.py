@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import date, datetime
 from typing import List, Optional
 from unicodedata import name
 
@@ -56,6 +56,7 @@ def query_invoices(
     limit: int = 100,
     offset: int = 0,
     desc: bool = False,
+    due_date: date = None
 ) -> List[Invoice]:
     """Retrieves invoices from db
 
@@ -90,6 +91,9 @@ def query_invoices(
     elif filter_by == "all":
         # TODO Add enumerations
         pass
+
+    if due_date:
+        invoices_query = invoices_query.filter(Invoice.due_date >= due_date).filter(Invoice.due_date <= due_date)
 
     try:
         order_by_stmt = getattr(Invoice, order_by)
