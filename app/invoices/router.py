@@ -1,8 +1,11 @@
+import calendar
+import io
 from datetime import datetime, timedelta
 from typing import List
 
 import fitz
 import ulid
+from dateutil.relativedelta import relativedelta
 from fastapi import APIRouter, Depends, File, Request, Response, UploadFile
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import HTTPException
@@ -14,16 +17,19 @@ from sqlalchemy import desc
 from starlette.status import HTTP_302_FOUND
 
 from app.auth.utils import requires_authentication
+from app.db.models import AgeingReport
 from app.db.session import SessionLocal
 from app.frontend.templates import template_response
+from app.invoices.ageing_report.processor import AgeingReportProcessor
 from app.invoices.ocr.textract import InvoiceImageProcessor, textract_client
 
 from .db_utils import (add_category_to_invoice, delete_invoice,
-                       get_invoice_by_id, get_invoices_by_user, query_invoices,
+                       get_invoice_by_id, get_invoices_by_user,
+                       query_ageing_reports, query_invoices,
                        remove_category_from_invoice, save_invoice,
                        update_paid_status_invoice)
-from .models import CreateInvoice, PublicInvoice
-from .s3_utils import upload_image_obj
+from .models import CreateInvoice, PublicAgeingReport, PublicInvoice
+from .s3_utils import upload_bytes_to_s3, upload_string_to_s3
 
 router = APIRouter()
 processor = InvoiceImageProcessor(textract_client)
@@ -65,7 +71,7 @@ async def get_home(
     return template_response("./invoices/invoice-list.html", {"request": request, "invoices": invoices})
 
 
-@router.get("/invoices/{invoice_id}")
+@router.get("/invoices/{invoice_id}", response_class=HTMLResponse)
 async def get_single_invoice(request: Request, invoice_id: str, user_id: str = Depends(requires_authentication)):
     with SessionLocal() as db:
         invoice = get_invoice_by_id(db, invoice_id)
@@ -108,7 +114,7 @@ async def post_upload_invoice(file: UploadFile = File(...), user_id: str = Depen
 
     # Upload image to S3
     extension = file.content_type.split("/")[1]
-    formatted_invoice.image_uri = upload_image_obj(file_data, f"{str(ulid.ulid())}", extension)
+    formatted_invoice.image_uri = upload_bytes_to_s3(file_data, f"{str(ulid.ulid())}", extension)
 
     with SessionLocal() as db:
         # TODO: Use file data to upsert based on image md5 hash
@@ -123,11 +129,6 @@ class CalendarDay(BaseModel):
     day: int
     active: bool
     invoices_due: List[PublicInvoice] = []
-
-
-import calendar
-
-from dateutil.relativedelta import relativedelta
 
 
 @router.get("/calendar", response_class=HTMLResponse)
@@ -184,6 +185,37 @@ async def get_register(
             "days": jsonable_encoder(calendar_days),
         },
     )
+
+
+@router.get("/ageing-reports", response_class=HTMLResponse)
+async def get_ageing_reports(request: Request, user_id: str = Depends(requires_authentication)):
+    with SessionLocal() as db:
+        reports = query_ageing_reports(db, user_id, order_by="created_on", desc=True)
+        reports = [PublicAgeingReport.from_orm(r) for r in reports]
+    return template_response(
+        "./invoices/ageing-reports.html", {"request": request, "reports": jsonable_encoder(reports)}
+    )
+
+
+@router.post("/ageing-reports/create", response_class=RedirectResponse)
+async def post_generate_ageing_report(user_id: str = Depends(requires_authentication)):
+
+    with SessionLocal() as db:
+        data = AgeingReportProcessor.fetch_data(db, user_id)
+        df = AgeingReportProcessor().apply(data)
+
+        # Convert DF to buffer and save to S3
+        stream = io.StringIO()
+        stream.write(f'{datetime.utcnow().strftime("%m/%d/%Y")} - Accounts Payable Ageing Report,\n,\n')
+        df.to_csv(stream, index=False)
+        s3_uri = upload_string_to_s3(stream.getvalue(), f"ageing-report-{datetime.utcnow()}-{ulid.ulid()}", "csv")
+
+        # Save report
+        new_report = AgeingReport(user_id=user_id, csv_uri=s3_uri)
+        db.add(new_report)
+        db.commit()
+
+    return RedirectResponse("/ageing-reports", status_code=HTTP_302_FOUND)
 
 
 # API routes - no redirects - pure actions

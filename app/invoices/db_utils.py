@@ -8,7 +8,8 @@ from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
-from app.db.models import Category, CategoryInvoiceAssociation, Invoice, Vendor
+from app.db.models import (AgeingReport, Category, CategoryInvoiceAssociation,
+                           Invoice, Vendor)
 
 from .models import CreateInvoice
 
@@ -56,7 +57,9 @@ def query_invoices(
     limit: int = 100,
     offset: int = 0,
     desc: bool = False,
-    due_date: date = None
+    due_date: datetime = None,
+    due_after: datetime = None,
+    due_before: datetime = None,
 ) -> List[Invoice]:
     """Retrieves invoices from db
 
@@ -95,6 +98,12 @@ def query_invoices(
     if due_date:
         invoices_query = invoices_query.filter(Invoice.due_date >= due_date).filter(Invoice.due_date <= due_date)
 
+    if due_after:
+        invoices_query = invoices_query.filter(Invoice.due_date >= due_after)
+
+    if due_before:
+        invoices_query = invoices_query.filter(Invoice.due_date <= due_before)
+
     try:
         order_by_stmt = getattr(Invoice, order_by)
     except AttributeError as e:
@@ -116,9 +125,17 @@ def get_invoices_by_user(
     limit: int = 100,
     offset: int = 0,
     desc: bool = False,
+    due_after: datetime = None,
 ) -> List[Invoice]:
     return query_invoices(
-        db, user_id=user_id, filter_by=filter_by, order_by=order_by, limit=limit, offset=offset, desc=desc
+        db,
+        user_id=user_id,
+        filter_by=filter_by,
+        order_by=order_by,
+        limit=limit,
+        offset=offset,
+        desc=desc,
+        due_after=due_after,
     )
 
 
@@ -238,3 +255,21 @@ def delete_invoice(db: sa.orm.Session, invoice_id: str) -> None:
     # Delete invoice
     db.query(Invoice).filter_by(id=invoice_id).delete()
     db.commit()
+
+
+def query_ageing_reports(
+    db: Session, user_id: str, *, order_by: str, limit: int = 100, offset: int = 0, desc: bool = False
+) -> List[AgeingReport]:
+
+    query = db.query(AgeingReport).filter_by(user_id=user_id)
+    try:
+        order_by_stmt = getattr(AgeingReport, order_by)
+    except AttributeError as e:
+        return []
+
+    if desc:
+        order_by_stmt = sa.desc(order_by_stmt)
+
+    query = query.order_by(order_by_stmt)
+    query = query.limit(limit).offset(offset)
+    return query.all()

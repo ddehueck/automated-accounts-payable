@@ -7,7 +7,7 @@ import humanize
 from loguru import logger as log
 from pydantic import BaseModel, validator
 
-from app.db.models import Invoice
+from app.db.models import AgeingReport, Invoice
 from app.invoices.ocr.models import RawInvoiceBody
 from app.utils import format_date_american
 
@@ -103,6 +103,20 @@ class PublicInvoice(BaseModel):
             american_due_date=format_date_american(db_invoice.due_date),
             status=status_enum.value,
             **db_invoice.__dict__,
+        )
+
+
+class PublicAgeingReport(BaseModel):
+    id: str
+    csv_uri: str
+    american_date: str
+    created_on: datetime
+
+    @classmethod
+    def from_orm(cls, db_report: AgeingReport) -> "PublicAgeingReport":
+        return cls(
+            american_date=format_date_american(db_report.created_on),
+            **db_report.__dict__,
         )
 
 

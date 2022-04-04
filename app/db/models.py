@@ -1,3 +1,4 @@
+from datetime import datetime
 from secrets import token_urlsafe
 
 import ulid
@@ -121,5 +122,18 @@ class CategoryInvoiceAssociation(Base):
     category = relationship("Category", back_populates="invoice_links")
     invoice = relationship("Invoice", back_populates="category_links")
 
-    # created_on = Column(DateTime, server_default=func.now())
-    # updated_on = Column(DateTime, onupdate=func.now())
+    created_on = Column(DateTime, server_default=func.now())
+    updated_on = Column(DateTime, onupdate=func.now())
+
+
+class AgeingReport(Base):
+    __tablename__ = "ageing_reports"
+
+    id = Column(String, default=ulid.ulid, primary_key=True)
+    user_id = Column(String, ForeignKey("users.id"), nullable=True, index=True)
+    organization_id = Column(String, ForeignKey("organizations.id"), nullable=True, index=True)
+
+    csv_uri = Column(String)
+
+    created_on = Column(DateTime, server_default=func.now())
+    updated_on = Column(DateTime, onupdate=func.now())

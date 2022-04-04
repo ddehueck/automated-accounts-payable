@@ -1,0 +1,39 @@
+{% extends "components/sidebar-base.html" %}
+
+{% block head %}
+<title>Ageing Reports | Easy Invoice Management</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<main>
+    <header class="max-w-6xl my-10 mx-auto flex items-center justify-between">
+        <h2 class="font-extrabold text-3xl mb-5">Ageing Reports</h2>
+        <form action="/ageing-reports/create" method="POST">
+            <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Generate Report</button>
+        </form>
+    </header>
+    
+    <section class="bg-white max-w-5xl mx-auto shadow overflow-hidden sm:rounded-md">
+        <ul role="list" class="divide-y divide-gray-200">
+            {% for report in reports %}
+            <li>
+                <div class="px-4 py-4 flex items-center sm:px-6">
+                    <div class="min-w-0 flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div class="truncate">
+                            <div class="flex text-sm">
+                                <p class="font-medium text-slate-600 truncate">{{report.american_date}}</p>
+                                <p class="ml-1 flex-shrink-0 font-normal text-gray-500">Accounts Payable Ageing Report</p>
+                            </div>
+                        </div>
+                    <div>
+                        <a href="{{report.csv_uri}}" target="_blank" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Download CSV</a>
+                    </div>
+                </div>
+            </li>
+          {% endfor %}
+        </ul>
+    </section>
+</main>
+
+{% endblock %}
