@@ -126,7 +126,7 @@ class CategoryInvoiceAssociation(Base):
     updated_on = Column(DateTime, onupdate=func.now())
 
 
-class AgeingReport(Base):
+class AgingReport(Base):
     __tablename__ = "ageing_reports"
 
     id = Column(String, default=ulid.ulid, primary_key=True)

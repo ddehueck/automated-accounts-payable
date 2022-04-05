@@ -1,0 +1,19 @@
+{% extends "components/sidebar-base.html" %}
+
+{% block head %}
+<title>{{report.american_date}} Aging Report | Easy Invoice Management</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<main>
+    <header class="max-w-6xl my-10 mx-auto px-10 flex items-center justify-between">
+        <h2 class="font-extrabold text-3xl mb-5">Aging Report for {{report.american_date}}</h2>
+    </header>
+    
+    <section class="bg-white max-w-5xl mx-auto shadow overflow-hidden sm:rounded-md">
+        {{report_html|safe}}
+    </section>
+</main>
+
+{% endblock %}

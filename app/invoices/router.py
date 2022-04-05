@@ -17,18 +17,18 @@ from sqlalchemy import desc
 from starlette.status import HTTP_302_FOUND
 
 from app.auth.utils import requires_authentication
-from app.db.models import AgeingReport
+from app.db.models import AgingReport
 from app.db.session import SessionLocal
 from app.frontend.templates import template_response
-from app.invoices.ageing_report.processor import AgeingReportProcessor
+from app.invoices.aging_report.processor import AgingReportProcessor
 from app.invoices.ocr.textract import InvoiceImageProcessor, textract_client
 
 from .db_utils import (add_category_to_invoice, delete_invoice,
-                       get_invoice_by_id, get_invoices_by_user,
-                       query_ageing_reports, query_invoices,
-                       remove_category_from_invoice, save_invoice,
-                       update_paid_status_invoice)
-from .models import CreateInvoice, PublicAgeingReport, PublicInvoice
+                       get_aging_report_by_id, get_invoice_by_id,
+                       get_invoices_by_user, query_aging_reports,
+                       query_invoices, remove_category_from_invoice,
+                       save_invoice, update_paid_status_invoice)
+from .models import CreateInvoice, PublicAgingReport, PublicInvoice
 from .s3_utils import upload_bytes_to_s3, upload_string_to_s3
 
 router = APIRouter()
@@ -187,35 +187,46 @@ async def get_register(
     )
 
 
-@router.get("/ageing-reports", response_class=HTMLResponse)
-async def get_ageing_reports(request: Request, user_id: str = Depends(requires_authentication)):
+@router.get("/aging-reports/{report_id}", response_class=HTMLResponse)
+async def get_aging_reports(request: Request, report_id: str, user_id: str = Depends(requires_authentication)):
     with SessionLocal() as db:
-        reports = query_ageing_reports(db, user_id, order_by="created_on", desc=True)
-        reports = [PublicAgeingReport.from_orm(r) for r in reports]
+        report = get_aging_report_by_id(db, report_id)
+        report = PublicAgingReport.from_orm(report)
     return template_response(
-        "./invoices/ageing-reports.html", {"request": request, "reports": jsonable_encoder(reports)}
+        "./invoices/single-aging-report.html",
+        {"request": request, "report_html": report.csv_html(), "report": jsonable_encoder(report)},
     )
 
 
-@router.post("/ageing-reports/create", response_class=RedirectResponse)
-async def post_generate_ageing_report(user_id: str = Depends(requires_authentication)):
+@router.get("/aging-reports", response_class=HTMLResponse)
+async def get_aging_reports(request: Request, user_id: str = Depends(requires_authentication)):
+    with SessionLocal() as db:
+        reports = query_aging_reports(db, user_id, order_by="created_on", desc=True)
+        reports = [PublicAgingReport.from_orm(r) for r in reports]
+    return template_response(
+        "./invoices/aging-reports.html", {"request": request, "reports": jsonable_encoder(reports)}
+    )
+
+
+@router.post("/aging-reports/create", response_class=RedirectResponse)
+async def post_generate_aging_report(user_id: str = Depends(requires_authentication)):
 
     with SessionLocal() as db:
-        data = AgeingReportProcessor.fetch_data(db, user_id)
-        df = AgeingReportProcessor().apply(data)
+        data = AgingReportProcessor.fetch_data(db, user_id)
+        df = AgingReportProcessor().apply(data)
 
         # Convert DF to buffer and save to S3
         stream = io.StringIO()
-        stream.write(f'{datetime.utcnow().strftime("%m/%d/%Y")} - Accounts Payable Ageing Report,\n,\n')
+        stream.write(f'{datetime.utcnow().strftime("%m/%d/%Y")} - Accounts Payable Aging Report,\n,\n')
         df.to_csv(stream, index=False)
-        s3_uri = upload_string_to_s3(stream.getvalue(), f"ageing-report-{datetime.utcnow()}-{ulid.ulid()}", "csv")
+        s3_uri = upload_string_to_s3(stream.getvalue(), f"aging-report-{datetime.utcnow()}-{ulid.ulid()}", "csv")
 
         # Save report
-        new_report = AgeingReport(user_id=user_id, csv_uri=s3_uri)
+        new_report = AgingReport(user_id=user_id, csv_uri=s3_uri)
         db.add(new_report)
         db.commit()
 
-    return RedirectResponse("/ageing-reports", status_code=HTTP_302_FOUND)
+    return RedirectResponse("/aging-reports", status_code=HTTP_302_FOUND)
 
 
 # API routes - no redirects - pure actions

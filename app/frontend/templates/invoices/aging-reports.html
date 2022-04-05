@@ -1,15 +1,15 @@
 {% extends "components/sidebar-base.html" %}
 
 {% block head %}
-<title>Ageing Reports | Easy Invoice Management</title>
+<title>Aging Reports | Easy Invoice Management</title>
 {{ super() }}
 {% endblock %}
 
 {% block content %}
 <main>
-    <header class="max-w-6xl my-10 mx-auto flex items-center justify-between">
-        <h2 class="font-extrabold text-3xl mb-5">Ageing Reports</h2>
-        <form action="/ageing-reports/create" method="POST">
+    <header class="max-w-6xl my-10 px-10 mx-auto flex items-center justify-between">
+        <h2 class="font-extrabold text-3xl mb-5">Aging Reports</h2>
+        <form action="/aging-reports/create" method="POST">
             <button type="submit" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Generate Report</button>
         </form>
     </header>
@@ -23,7 +23,7 @@
                         <div class="truncate">
                             <div class="flex text-sm">
                                 <p class="font-medium text-slate-600 truncate">{{report.american_date}}</p>
-                                <p class="ml-1 flex-shrink-0 font-normal text-gray-500">Accounts Payable Ageing Report</p>
+                                <p class="ml-1 flex-shrink-0 font-normal text-gray-500">Accounts Payable Aging Report</p>
                             </div>
                         </div>
                     <div>

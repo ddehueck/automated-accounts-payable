@@ -1,13 +1,15 @@
+import io
 from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 from typing import List, Union
 
 import humanize
+import pandas as pd
 from loguru import logger as log
 from pydantic import BaseModel, validator
 
-from app.db.models import AgeingReport, Invoice
+from app.db.models import AgingReport, Invoice
 from app.invoices.ocr.models import RawInvoiceBody
 from app.utils import format_date_american
 
@@ -106,18 +108,33 @@ class PublicInvoice(BaseModel):
         )
 
 
-class PublicAgeingReport(BaseModel):
+class PublicAgingReport(BaseModel):
     id: str
     csv_uri: str
     american_date: str
     created_on: datetime
 
     @classmethod
-    def from_orm(cls, db_report: AgeingReport) -> "PublicAgeingReport":
+    def from_orm(cls, db_report: AgingReport) -> "PublicAgingReport":
         return cls(
             american_date=format_date_american(db_report.created_on),
             **db_report.__dict__,
         )
+
+    @property
+    def as_df(self) -> pd.DataFrame:
+        import requests
+        import numpy as np
+        res = requests.get(self.csv_uri)
+        data = res.content.decode('utf8')
+        df = pd.read_csv(io.StringIO(data), header=2)
+        df = df.fillna("")
+        df.replace(np.nan, 0, inplace=True)
+        return df
+
+
+    def csv_html(self) -> str:
+        return self.as_df.to_html(index=False)
 
 
 class CategoryEnum(str, Enum):

@@ -10,5 +10,5 @@ class InvoiceGroup(BaseModel):
     invoice_list: List[PublicInvoice]
 
 
-class AgeingReportInput(BaseModel):
+class AgingReportInput(BaseModel):
     groups: List[InvoiceGroup]

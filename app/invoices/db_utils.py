@@ -8,7 +8,7 @@ from sqlalchemy import asc, desc
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import func
 
-from app.db.models import (AgeingReport, Category, CategoryInvoiceAssociation,
+from app.db.models import (AgingReport, Category, CategoryInvoiceAssociation,
                            Invoice, Vendor)
 
 from .models import CreateInvoice
@@ -257,13 +257,17 @@ def delete_invoice(db: sa.orm.Session, invoice_id: str) -> None:
     db.commit()
 
 
-def query_ageing_reports(
-    db: Session, user_id: str, *, order_by: str, limit: int = 100, offset: int = 0, desc: bool = False
-) -> List[AgeingReport]:
+def get_aging_report_by_id(db: Session, report_id: str) -> Optional[AgingReport]:
+    return db.query(AgingReport).filter_by(id=report_id).first()
 
-    query = db.query(AgeingReport).filter_by(user_id=user_id)
+
+def query_aging_reports(
+    db: Session, user_id: str, *, order_by: str, limit: int = 100, offset: int = 0, desc: bool = False
+) -> List[AgingReport]:
+
+    query = db.query(AgingReport).filter_by(user_id=user_id)
     try:
-        order_by_stmt = getattr(AgeingReport, order_by)
+        order_by_stmt = getattr(AgingReport, order_by)
     except AttributeError as e:
         return []
 
