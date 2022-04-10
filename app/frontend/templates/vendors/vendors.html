@@ -1,5 +1,6 @@
 {% extends "components/sidebar-base.html" %}
 {% from "components/vendors/vendor-card.html" import vendor_card %}
+{% from "components/invoices/invoice-empty-state.html" import empty_state %}
 
 {% block head %}
 <title>Vendors | Easy Invoice Management</title>
@@ -11,7 +12,7 @@
     <div class="p-8">
         <h2 class="font-extrabold text-3xl mb-5">Vendors</h2>
 
-        {% if invoices %}
+        {% if vendors %}
         <section class="flex justify-center">
             <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {% for vendor in vendors %}

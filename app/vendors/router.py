@@ -23,7 +23,7 @@ router = APIRouter()
 async def get_vendors(request: Request, user_id: str = Depends(requires_authentication)):
     with SessionLocal() as db:
         vendors = get_vendors_by_user(db, user_id)
-        vendors = []#[PublicVendorView.load(db, v) for v in vendors]
+        vendors = [PublicVendorView.load(db, v) for v in vendors]
     return template_response("./vendors/vendors.html", {"request": request, "vendors": jsonable_encoder(vendors)})
 
 

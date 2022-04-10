@@ -123,15 +123,15 @@ class PublicAgingReport(BaseModel):
 
     @property
     def as_df(self) -> pd.DataFrame:
-        import requests
         import numpy as np
+        import requests
+
         res = requests.get(self.csv_uri)
-        data = res.content.decode('utf8')
+        data = res.content.decode("utf8")
         df = pd.read_csv(io.StringIO(data), header=2)
         df = df.fillna("")
         df.replace(np.nan, 0, inplace=True)
         return df
-
 
     def csv_html(self) -> str:
         return self.as_df.to_html(index=False)

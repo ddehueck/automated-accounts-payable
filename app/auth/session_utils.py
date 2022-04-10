@@ -4,9 +4,12 @@ from typing import List
 from fastapi import Request
 from pydantic import BaseModel
 
+from app.auth.models import UserRoles
+
 
 class UserSession(BaseModel):
     user_id: str = None
+    role: str = UserRoles.default
 
 
 def set_session(req: Request, data: UserSession) -> None:
