@@ -507,6 +507,18 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "rollbar"
+version = "0.16.2"
+description = "Easy and powerful exception tracking with Rollbar. Send messages and exceptions with arbitrary context, get back aggregates, and debug production issues quickly."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+requests = {version = ">=0.12.1", markers = "python_version >= \"3.6\""}
+six = ">=1.9.0"
+
+[[package]]
 name = "s3transfer"
 version = "0.5.1"
 description = "An Amazon S3 Transfer Manager"
@@ -692,7 +704,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "0f93cd73f8bb0f2d943eff488d85af4f4c3a9f09ce51a7eff765863ec57fde13"
+content-hash = "09a6ba06a4a9c83418715d6ee13c44aa8e4debc306d84d9983d155b02a390688"
 
 [metadata.files]
 alembic = [
@@ -1082,6 +1094,9 @@ requests = [
 result = [
     {file = "result-0.7.0-py3-none-any.whl", hash = "sha256:97dcc4b2c6b376713c8de1b49d583a272e05ea2cd45e7fd18a3e8be42fc9fa6f"},
     {file = "result-0.7.0.tar.gz", hash = "sha256:bd649435fbf457de32e5e941d63d787c21193b126d48c848458ddda1683de980"},
+]
+rollbar = [
+    {file = "rollbar-0.16.2.tar.gz", hash = "sha256:aa3b570062dd8dfb0e11537ba858f9e1633a604680e062a525434b8245540f87"},
 ]
 s3transfer = [
     {file = "s3transfer-0.5.1-py3-none-any.whl", hash = "sha256:25c140f5c66aa79e1ac60be50dcd45ddc59e83895f062a3aab263b870102911f"},

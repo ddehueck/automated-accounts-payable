@@ -11,6 +11,7 @@
     <div class="p-8">
         <h2 class="font-extrabold text-3xl mb-5">Vendors</h2>
 
+        {% if invoices %}
         <section class="flex justify-center">
             <ul role="list" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {% for vendor in vendors %}
@@ -20,6 +21,9 @@
                 {% endfor %}
             </ul>
         </section>
+        {% else %}
+            {{empty_state()}}
+        {% endif %}
     </div>
 </main>
 {% endblock %}

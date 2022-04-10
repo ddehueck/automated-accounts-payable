@@ -1,0 +1,13 @@
+{% macro empty_state() %}
+<section class="p-10 m-10 rounded-xl bg-gray-100">
+    <p class="text-center mb-6 text-gray-500">Upload an invoice to get started!</p>
+    <div class="flex items-center justify-center">
+        <a href="/upload-invoice" class="inline-flex items-center px-8 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" fill="currentColor">
+                <path fill-rule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clip-rule="evenodd" />
+            </svg>
+            Upload Invoice
+        </a>
+    </div>
+</section>
+{% endmacro %}

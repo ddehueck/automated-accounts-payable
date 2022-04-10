@@ -1,6 +1,7 @@
 {% extends "components/sidebar-base.html" %}
 {% from "components/invoices/query-menu.html" import query_menu %}
 {% from "components/invoices/invoice-table.html" import invoice_table %}
+{% from "components/invoices/invoice-empty-state.html" import empty_state %}
 
 {% block head %}
 <title>Invoice List | Easy Invoice Management</title>
@@ -13,7 +14,11 @@
         <h2 class="font-extrabold text-3xl mb-5">Invoice List</h2>
         {{ query_menu() }}
 
-        {{invoice_table(invoices.values())}}
+        {% if invoices %}
+            {{invoice_table(invoices.values())}}
+        {% else %}
+            {{empty_state()}}
+        {% endif %}
     </div>
 </main>
 {% endblock %}

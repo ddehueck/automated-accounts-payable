@@ -6,12 +6,13 @@
 {% endblock %}
 
 {% block content %}
-<main>
-    <header class="max-w-6xl my-10 mx-auto px-10 flex items-center justify-between">
-        <h2 class="font-extrabold text-3xl mb-5">Aging Report for {{report.american_date}}</h2>
+<main class="max-w-6xl mx-auto px-10">
+    <header class="my-10 flex items-center justify-between">
+        <h2 class="font-extrabold text-3xl">Aging Report for {{report.american_date}}</h2>
+        <a href="{{report.csv_uri}}" target="_blank" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Download CSV</a>
     </header>
     
-    <section class="bg-white max-w-5xl mx-auto shadow overflow-hidden sm:rounded-md">
+    <section class="aging-report overflow-hidden border border-gray-300 md:rounded-lg">
         {{report_html|safe}}
     </section>
 </main>

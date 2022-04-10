@@ -8,6 +8,7 @@ class GlobalConfig(BaseSettings):
     in_deployment: bool = False
     session_secret: str = None
     base_domain: str = "http://localhost:8000"
+    rollbar_key: str = None
 
     class Config:
         env_file = ".env"

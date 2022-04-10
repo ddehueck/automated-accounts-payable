@@ -5,3 +5,22 @@
 [x-cloak] {
   display: none !important;
 }
+
+@layer components {
+
+  .aging-report table {
+    @apply min-w-full divide-y divide-gray-300
+  }
+
+  .aging-report table thead {
+    @apply bg-gray-50
+  }
+
+  .aging-report table thead tr th {
+    @apply px-3 py-3.5 text-left text-sm font-semibold text-gray-900
+  }
+
+  .aging-report table tbody tr td {
+    @apply whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6
+  }
+}

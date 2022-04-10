@@ -5,6 +5,9 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.status import HTTP_302_FOUND
 
+import rollbar
+from rollbar.contrib.fastapi import ReporterMiddleware as RollbarMiddleware
+
 from app.auth.utils import optional_authentication
 
 from .auth.router import router as auth_router
@@ -15,8 +18,12 @@ from .payments.router import router as payments_router
 from .users.router import router as users_router
 from .vendors.router import router as vendors_router
 
+
 if global_config.in_deployment:
     app = FastAPI(docs_url=None)
+    # Deployment specific middleware
+    rollbar.init(global_config.rollbar_key, environment="production")
+    app.add_middleware(RollbarMiddleware)
 else:
     app = FastAPI()
 
@@ -32,8 +39,8 @@ app.include_router(payments_router)
 app.include_router(users_router)
 app.include_router(vendors_router)
 
-global_router = APIRouter()
 
+global_router = APIRouter()
 
 @global_router.get("/health")
 def get_health():
@@ -45,6 +52,5 @@ def get_index(user_id: str = Depends(optional_authentication)):
     if user_id:
         return RedirectResponse("/inbox", status_code=HTTP_302_FOUND)
     return RedirectResponse("/landing", status_code=HTTP_302_FOUND)
-
 
 app.include_router(global_router)
