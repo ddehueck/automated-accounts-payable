@@ -1,15 +1,15 @@
 import json
-from typing import List
+from typing import List, Optional
 
 from fastapi import Request
 from pydantic import BaseModel
 
-from app.auth.models import UserRoles
+from app.auth.models import UserRoleEnum
 
 
 class UserSession(BaseModel):
     user_id: str = None
-    role: str = UserRoles.default
+    role: Optional[UserRoleEnum] = UserRoleEnum.default
 
 
 def set_session(req: Request, data: UserSession) -> None:

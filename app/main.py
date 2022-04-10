@@ -9,6 +9,7 @@ from starlette.status import HTTP_302_FOUND
 
 from app.auth.utils import optional_authentication
 
+from .admin.router import router as admin_router
 from .auth.router import router as auth_router
 from .config import config as global_config
 from .invoices.router import router as invoices_router
@@ -36,6 +37,7 @@ app.include_router(marketing_router)
 app.include_router(payments_router)
 app.include_router(users_router)
 app.include_router(vendors_router)
+app.include_router(admin_router)
 
 
 global_router = APIRouter()

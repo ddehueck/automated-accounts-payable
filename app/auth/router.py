@@ -64,7 +64,7 @@ async def post_login(request: Request, email: str = Form(...), password: str = F
             params = urlencode({"error": "Password or email is incorrect."})
             return RedirectResponse(f"/login?{params}", status_code=HTTP_302_FOUND)
 
-    set_session(request, UserSession(user_id=existing_user.id))
+    set_session(request, UserSession(user_id=existing_user.id, role=existing_user.role))
     return RedirectResponse("/", status_code=HTTP_302_FOUND)
 
 

@@ -1,0 +1,14 @@
+{% extends "components/sidebar-base.html" %}
+{% from "components/vendors/vendor-card.html" import vendor_card %}
+{% from "components/invoices/invoice-empty-state.html" import empty_state %}
+
+{% block head %}
+<title>Admin Home | Easy Invoice Management</title>
+{{ super() }}
+{% endblock %}
+
+{% block content %}
+<main class="w-full h-full overflow-scroll">
+    <p>Hello, admin.</p>
+</main>
+{% endblock %}

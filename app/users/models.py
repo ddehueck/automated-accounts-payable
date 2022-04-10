@@ -3,7 +3,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app.auth.models import UserRoles
+from app.auth.models import UserRoleEnum
 
 
 class User(BaseModel):
@@ -13,7 +13,7 @@ class User(BaseModel):
     email: str
     password_hash: str
     paid_plan: str = None
-    role: UserRoles = UserRoles.default
+    role: UserRoleEnum = UserRoleEnum.default
     stripe_session_id: str = None
     created_on: datetime
     updated_on: datetime = None

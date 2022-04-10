@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql.functions import user
 
 import app.db.models as db_models
+from app.auth.models import UserRoleEnum
 from app.config import config as global_config
 
 from .session_utils import UserSession
@@ -25,6 +26,13 @@ def requires_authentication(req: Request) -> str:
     session = UserSession(**req.session)
     if not session.user_id:
         raise HTTPException(400, "Must be logged in.")
+    return session.user_id
+
+
+def admin_authentication(req: Request) -> str:
+    session = UserSession(**req.session)
+    if not session.user_id or session.role != UserRoleEnum.admin:
+        raise HTTPException(401, "Unauthorizes")
     return session.user_id
 
 
