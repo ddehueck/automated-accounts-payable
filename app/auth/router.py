@@ -29,7 +29,7 @@ router = APIRouter()
 # TODO: Proper redirects
 @router.post("/register", response_class=RedirectResponse)
 async def post_register(
-    request: Request, name: str = Form(...), email: str = Form(...), password: str = Form(..., min_length=6)
+    request: Request, name: str = Form(...), company_name: str = Form(...), email: str = Form(...), password: str = Form(..., min_length=6)
 ):
     with SessionLocal() as db:
         existing_user = db.query(db_models.User).filter_by(email=email).first()
@@ -37,12 +37,20 @@ async def post_register(
             params = urlencode({"error": "This email has already been registered."})
             return RedirectResponse(f"/landing?{params}", status_code=HTTP_302_FOUND)
 
-        new_user = db_models.User(name=name, email=email, password_hash=hash_pswd(password))
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
+        # Create a new organization and add user to it. 
+        # TODO: Allow users to merge with an exisiting organization
+        new_organization = db_models.Organization(name=company_name)
+        db.add(new_organization)
+        db.flush()
+        db.refresh(new_organization)
 
-    set_session(request, UserSession(user_id=new_user.id))
+        new_user = db_models.User(name=name, email=email, password_hash=hash_pswd(password), organization_id=new_organization.id)
+        db.add(new_user)
+        db.flush()
+        db.refresh(new_user)
+        db.commit()
+
+        set_session(request, UserSession.from_user(new_user))
     return RedirectResponse("/", status_code=HTTP_302_FOUND)
 
 
@@ -64,7 +72,7 @@ async def post_login(request: Request, email: str = Form(...), password: str = F
             params = urlencode({"error": "Password or email is incorrect."})
             return RedirectResponse(f"/login?{params}", status_code=HTTP_302_FOUND)
 
-    set_session(request, UserSession(user_id=existing_user.id, role=existing_user.role))
+        set_session(request, UserSession.from_user(existing_user))
     return RedirectResponse("/", status_code=HTTP_302_FOUND)
 
 

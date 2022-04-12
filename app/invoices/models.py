@@ -2,7 +2,7 @@ import io
 from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
-from typing import List, Union
+from typing import List, Union, Optional
 
 import humanize
 import pandas as pd
@@ -91,7 +91,9 @@ class PublicInvoice(BaseModel):
         return humanize.naturaltime(delta)
 
     @validator("amount_due")
-    def enforce_two_decimal_places(cls, v: Decimal) -> str:
+    def enforce_two_decimal_places(cls, v: Decimal) -> Optional[str]:
+        if not v:
+            return None
         return f"{Decimal(v):.2f}"
 
     @classmethod

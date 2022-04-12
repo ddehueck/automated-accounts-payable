@@ -10,6 +10,7 @@ from sqlalchemy.sql.expression import func
 
 from app.db.models import (AgingReport, Category, CategoryInvoiceAssociation,
                            Invoice, Vendor)
+from app.users.db_utils import get_user_by_id
 
 from .models import CreateInvoice
 
@@ -36,10 +37,13 @@ def ensure_vendor_by_name(db: sa.orm.Session, vendor_name: str, user_id: str) ->
 
 
 def save_invoice(db: Session, invoice: CreateInvoice) -> Invoice:
+    """ Saves invoice - ensures vendor exists and sets orgnaization id that corresponds to user creating the invoice """
     db_invoice = invoice.to_orm()
     db_vendor = ensure_vendor_by_name(db, db_invoice.vendor_name, invoice.user_id)
-
     db_invoice.vendor_id = db_vendor.id
+
+    user = get_user_by_id(db, invoice.user_id)
+    db_invoice.organization_id = user.organization_id
 
     db.add(db_invoice)
     db.commit()

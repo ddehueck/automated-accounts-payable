@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -13,7 +13,7 @@ class User(BaseModel):
     email: str
     password_hash: str
     paid_plan: str = None
-    role: UserRoleEnum = UserRoleEnum.default
+    role: Optional[UserRoleEnum] = UserRoleEnum.default
     stripe_session_id: str = None
     created_on: datetime
     updated_on: datetime = None
