@@ -14,12 +14,8 @@ class UserSession(BaseModel):
     organization_id: Optional[str] = None
 
     @classmethod
-    def from_user(cls, user: db_models.User) -> 'UserSession':
-        return UserSession(
-            user_id=user.id,
-            role=user.role,
-            organization_id=user.organization_id
-        )
+    def from_user(cls, user: db_models.User) -> "UserSession":
+        return UserSession(user_id=user.id, role=user.role, organization_id=user.organization_id)
 
 
 def set_session(req: Request, data: UserSession) -> None:

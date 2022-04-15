@@ -1,6 +1,6 @@
 from enum import Enum
 
 
-class PaymentPlanEnum(Enum):
+class PaymentPlanEnum(str, Enum):
     free = "free"
     premium = "premium"

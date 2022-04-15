@@ -20,7 +20,7 @@ class User(Base):
     id = Column(String, default=ulid.ulid, primary_key=True)
     organization_id = Column(String, ForeignKey("organizations.id"))
     invoices = relationship("Invoice")
-    organization = relationship("Organization")
+    organization = relationship("Organization", viewonly=True)
 
     name = Column(String, nullable=True)
     role = Column(String, nullable=True)

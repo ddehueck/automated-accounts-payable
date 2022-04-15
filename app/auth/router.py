@@ -29,7 +29,11 @@ router = APIRouter()
 # TODO: Proper redirects
 @router.post("/register", response_class=RedirectResponse)
 async def post_register(
-    request: Request, name: str = Form(...), company_name: str = Form(...), email: str = Form(...), password: str = Form(..., min_length=6)
+    request: Request,
+    name: str = Form(...),
+    company_name: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(..., min_length=6),
 ):
     with SessionLocal() as db:
         existing_user = db.query(db_models.User).filter_by(email=email).first()
@@ -37,14 +41,16 @@ async def post_register(
             params = urlencode({"error": "This email has already been registered."})
             return RedirectResponse(f"/landing?{params}", status_code=HTTP_302_FOUND)
 
-        # Create a new organization and add user to it. 
+        # Create a new organization and add user to it.
         # TODO: Allow users to merge with an exisiting organization
         new_organization = db_models.Organization(name=company_name)
         db.add(new_organization)
         db.flush()
         db.refresh(new_organization)
 
-        new_user = db_models.User(name=name, email=email, password_hash=hash_pswd(password), organization_id=new_organization.id)
+        new_user = db_models.User(
+            name=name, email=email, password_hash=hash_pswd(password), organization_id=new_organization.id
+        )
         db.add(new_user)
         db.flush()
         db.refresh(new_user)

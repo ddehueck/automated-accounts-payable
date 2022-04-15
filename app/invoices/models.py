@@ -2,7 +2,7 @@ import io
 from datetime import datetime, timedelta
 from decimal import Decimal
 from enum import Enum
-from typing import List, Union, Optional
+from typing import List, Optional, Union
 
 import humanize
 import pandas as pd

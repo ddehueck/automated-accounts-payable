@@ -1,4 +1,3 @@
-import re
 from datetime import date, datetime
 from typing import List, Optional
 from unicodedata import name
@@ -37,7 +36,7 @@ def ensure_vendor_by_name(db: sa.orm.Session, vendor_name: str, user_id: str) ->
 
 
 def save_invoice(db: Session, invoice: CreateInvoice) -> Invoice:
-    """ Saves invoice - ensures vendor exists and sets orgnaization id that corresponds to user creating the invoice """
+    """Saves invoice - ensures vendor exists and sets orgnaization id that corresponds to user creating the invoice"""
     db_invoice = invoice.to_orm()
     db_vendor = ensure_vendor_by_name(db, db_invoice.vendor_name, invoice.user_id)
     db_invoice.vendor_id = db_vendor.id
