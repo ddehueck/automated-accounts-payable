@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from starlette.status import HTTP_302_FOUND
 
 import app.db.models as db_models
+from app.auth.models import UserRoleEnum
 from app.config import config as global_config
 from app.db.session import SessionLocal
 from app.emails.utils import send_reset_pswd_email
@@ -79,6 +80,9 @@ async def post_login(request: Request, email: str = Form(...), password: str = F
             return RedirectResponse(f"/login?{params}", status_code=HTTP_302_FOUND)
 
         set_session(request, UserSession.from_user(existing_user))
+
+    if existing_user.role == UserRoleEnum.admin:
+        return RedirectResponse("/admin/home", status_code=HTTP_302_FOUND)
     return RedirectResponse("/", status_code=HTTP_302_FOUND)
 
 
